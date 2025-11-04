@@ -1,0 +1,751 @@
+\documentclass{article}
+
+% required 
+\usepackage[hyphens]{url} 
+\usepackage{Sweave}
+\usepackage{graphicx}
+\usepackage{natbib}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{float}
+\usepackage[utf8]{inputenc} % allow characters in citations 
+\usepackage[nottoc]{tocbibind} %should add References to the table of contents?
+\usepackage{amsmath} % making nice equations 
+\usepackage{listings} % add in stan code
+\usepackage{xcolor}
+\usepackage{capt-of}%allows me to set a caption for code in appendix 
+\usepackage[export]{adjustbox} % adding a box around a map
+\usepackage{lineno}
+\linenumbers
+\usepackage[small]{caption}
+\usepackage{longtable}
+
+\usepackage{xr-hyper} %refer to Fig.s in another document
+\usepackage{hyperref}
+
+\setlength{\captionmargin}{30pt}
+\setlength{\abovecaptionskip}{0pt}
+\setlength{\belowcaptionskip}{10pt}
+
+% optional: change spacing
+\topmargin -1.5cm        
+\oddsidemargin 0.5cm   
+\evensidemargin 0.5cm  
+\textwidth 15.59cm
+\textheight 21.94cm 
+% \renewcommand{\baselinestretch}{1.5} % 1.5 lines between lines
+\parindent 0pt		  % sets leading space for paragraphs
+
+\externaldocument[supp-]{m2m_supp}
+
+%%% end preambling. %%%
+
+\begin{document}
+
+\renewcommand{\bibname}{References}%names reference list 
+\SweaveOpts{concordance=TRUE} % For RStudio hiccups
+
+\title{Linking microbial diversity to macrobiota diversity in eelgrass meadows} 
+\date{\today}
+\author{Deirdre Loughnan$^{1,2}$, Laura Parfrey$^{2}$, Margot Hessing-Lewis$^{1}$, Mary O'Connor$^{2}$}
+\maketitle 
+$^1$ Hakai Institute\\
+$^2$ Zoology, Faculty of Science, University of British Columbia. \\
+
+Corresponding Author: Deirdre Loughnan deirdre.loughnan@hakai.org \\
+
+<<label=runcode1,  echo=FALSE>>=
+source("..//rcode/m2mMsValues.R")
+@
+
+\section*{Introduction}
+
+\begin{itemize}
+\item Climate change is altering the structure of ecological communities worldwide---in most systems we see a decline in diversity, but effects are not uniform---limited understanding of underlying mechanisms and key environmental variables that contribute to community resilience versus those that are reshaping communities
+
+\begin{enumerate}
+\item To date considerable efforts to understand how diversity is changing globally
+\begin{itemize}
+\item But assessments of diversity often focus on specific guilds or taxonomic groups
+\item Rarely do they span organismal scales, such as between micro and macro scales, even within a single system
+\item Increasingly clear that interactions between microbiota and macrobiota play an important role in shaping ecological communities and should be incorporated into assessments of biodiversity
+\end{itemize}
+\item Considerable research has now demonstrated the myriad of ways that microbial diversity shapes ecological communities and ecosystem services
+\begin{itemize}
+\item shape the environment---nutrient cycling---metabolizing organic carbon and nitrogen
+\item link organisms across trophic levels
+\item species interactions and symbiosis (McRoy and Goering 1974; Kirchman et al 1984---Sanders-Smith2020)
+\item microbial diversity is product of: host sp identity, space, and local envirt
+\item but still limited understanding of the complexity of interactions and the environmental factors that shape them
+\end{itemize}
+\item Eelgrass communities are an excellent system for furthering our understanding of micro-macro relationships across scales (split into 2 paragraphs)
+\begin{enumerate}
+\item General relationships between eelgrass and diversity:
+\begin{itemize}
+\item Farjalla et al 2012: community assembly differs across scales---envirt filters and interactions shape animals but microbes are stochastic
+\item But in marine ecosystems hosts more prone to horizontal transmission---Turon et al 2018; Russel 2019---Sanders-Smith2020; global scale find that microbial comm mirror that of envirt (Fahimipour2017---Sanders-Smith2020); but at finer scales see selection by host through exudates
+\item Seagrass release methanol and cellulose---food for microbes---and phenols which deters colonization: 
+\item Crump et al 2018---Sanders-Smith2020:microbes consume toxic byproducts---methanol and ethanol---and produce enzymes that limit epiphyte overgrowth
+\item Previous studies found evidence that in seagrass animal-microbial systems covary Yeager et al 2019, Bengtsson et al. 2017
+\end{itemize}
+\item Summary of seagrass work around bc/Calvert
+\begin{itemize}
+\item Several studies have studied eelgrass community diversity in meadows in coastal BC: meadows that are farther apart are more dissimilar---driven by environment---temp and DO explained variation more than habitat traits (LAI)---but taxa specific (Stark2020)
+\item Sanders-Smith2020: differences in microbial community struct among regions but not water column; differences in diversity associated with new (lowest richness higher dominance) and old leaves 
+\item Segovia2020:2 years of data: lowever alpha diversity on seagrass than water, most abundant microeuk = diatoms, copepods,gregarines, and rotifers; Bray-curtis and Jaccard both showed more similar communities on seagrass than other biofilms and seawater---found spatial structuring in core taxa and a strong effect of temperature
+\item Meadows can differ in their diversity spatially, but less is known how they change over time---further our understanding of how these processes covary and what potential drivers may shape community responses is unclear
+\end{itemize}
+\end{enumerate}
+\item Here we explore how changes in microbial diversity effect macrobial communities in both time and space---exploring the potential for microbes to mediate environmental conditions and underlie diversity changes across a community.
+\begin{itemize}
+\item  two four-year time-series of microbial diversity based on DNA sequences for the prokaryote and microeukaryote communities swabbed from eelgrass and paired with diversity of epifauna communities present on the eelgrass. 
+\item Use a joint Bayesian model to explore how diversity in micro and macro communities change over time and whether species interactions are correlated with environment cues, such as temperature or differences in habitat structure.
+\item In addition to estimating overall trends in diversity in eelgrass communities, we also tested for trends across sites.
+\end{itemize}
+\end{enumerate}
+
+
+
+
+% \item Seagrass ecosystem services: habitat for algae, animals, microbes,  biomass production, carbon storage and nutrient cycling (Duarte and Krause-Jensen 2017, Macreadie et al. 2019), supports fisheries---economically important (Huang et al 2015, Unsworth et al. 2018). high ecological and conservation value---habitat protection and restoration
+% \item Finlay and Fenchel 2002---dispersal isnt limiting for bacteria
+% \item Seagrass = foundation spp in coastal ecosystems of BC
+% \item Diversity depends on presence (McCloskey and Unsworth 2015, Lefcheck et al. 2017) and spatial structure ie patch size ie edge effects (Hovel at al 2021, Tanner 2005), metacommunity structure etc
+% \item Diversity in eelgrass communities shaped by local conditions---abiotic, food availability, spp intrxns---regional---dispersal, colonization
+% \item Importance of microbial community: food source for invertebrate epifauna---isopods and amphipods and gastropods
+% \item previous studies of microbial diversity have focused on species that provide ecosystme services like nutrient addition (source of N by mineralizing amino acids---Tarquinio et al. 2018) or disease such as the protist that causes seasrass wasting disease
+% \item Hassenruck et al. 2015: looked at epibiota 18S eukaryotic epibiota across sites under contrasting environments in Papua New Guinea
+% \item most microbes are rare and occur at low density---Gast et al 2011
+
+
+
+\end{itemize}
+
+\section*{Materials and Methods}
+\begin{enumerate}
+\item General intro to study area
+\begin{itemize}
+\item Both microbial and macro data collection was conducted around Calvert Island in BC
+\item Hakai L\'{u}xvb\'{a}l\'{i}s conservancy: low human impacted \emph{Zostera marina} meadows
+\item Meadows = monoculutre of \emph{Zostera marina} with macroalgae and microalgal 
+\item 5 regions each with 2 sites, except choked which had 3 sites (Choked, GPS: 51.66825, -128.11855 and Pruth, GPS: 51.395, -128.069), Goose (GPS: 51.92652, -128.45317), McMullin (GPS: 52.06178, -128.41239) and Triquet (GPS: 51.80869, -128.24746) islands (Fig. 1)
+\end{itemize}
+
+\item Epifauna surveys:
+\begin{itemize}
+\item Epifauna surveys and collection of seagrass habitat traits were collected from 2014 to 2017
+\item Using SCUBA sampled six 0.25 m by 0.25 m quadrats established in a 15m by 30m array placed in the middle of the meadow
+\item Collected eelgrass, detritus, macroalgae and epifaunal invertebrates
+\item Prior to collecting eelgrass traits, rinsed blades to remove epifaunal invertebrates and passed through 500 $\mu$m sieve.
+\item Invertebrates preserved 95\% EtOh and identified upon returning from the field using light microscopy (10x magnification)
+\item Species were identified to the lowest taxonomic level possible using manuals by Light and Smith manual (Carlton 2007) and Kozloff (1996)
+\item Additional domain expertise of the natural history of our surveys species was used to remove species known to predominantly reside in eelgrass sediment ($n$ = \Sexpr{rmSp} species)
+\item For additional detail of the applied methods, see....
+\end{itemize}
+
+\item Microbial surveys
+\begin{itemize}
+\item Collection and sequencing of microbial communities was conducted from 2015 to 2018
+\item Collected one shoot just outside each quadrat sealed underwater in a sterile plastic bag at the location of collection.
+\item Swabs were taken from the second oldest blade, from an area with minimal to no epibiota and 10 cm in length, rinsing the area for 10 seconds with filtered seawater (0.22$\mu$m) to remove attached organisms, and swabbed using Puritan sterile swabs for 10 seconds.
+\item Swabs were placed in cryotube and placed in a -80$^{\circ}$C freezer within 6 hours of sampling and until DNA extraction
+\item Extracted DNA from swabs using Qiagen Powersoil---htp 96 well DNA extraction Kit (Carlsbad, CA): V4 region of 18S rRNA gene was targeted for amplification using primers E572F: 5'-AYGGTATCTRATCRTCTTYG-3' and PCR, library construction, and Illumina MiSeq amplicon sequencing were carried out at the Integrated Microbiome Resource Facility, Centre for Comparative Genomics and Evolutionary Bioinformatics at Dalhousie University Halifax, Canada using standard protocols (Comeau et al. 2011)
+\item 16S DNA extraction: MoBio PowerSoilVR -htp 96 well DNA extraction kit (Carlsbad, CA), V4 region of the 16S rRNA gene in Bacteria and Archaea was targeted for amplification using redesigned versions of the primers 515f/806r as described by Lemay et al. 2018a. 
+\item Removed OTUs with fewer than 2 reads for that sample to minimize the impact of barcode switching, and OTUs with fewer than 250 total reads and samples with low read counts (<1,000 reads/sample)
+\item For additional detail, see Sanders-Smith et al. 2020 and Segovia et al.2020 for methods for sequence data analysis.
+\end{itemize}
+
+\item Climate and habitat traits
+\begin{itemize}
+\item At time of epifauna sampling collected data on bed area, meadow depth, eelgrass leaf area index, biomass of eelgrass and epiphytes'
+\item Measured shoot leaf area and biomass: measured leaf length, width and blade number of five haphazardly selected representative shoots from each quadrat, multiplying the average blade area ($m^2$) per shoot by the shoot density (shoots per $m^2$)
+\item LAI: structural complexity of bed and amount of habitat available for colonization by epiphytes and invertebrates (Enriquez et al. 2019, Green and Short 2003): LAI = mean blade length X width X number of blades per shoot; multiplying number of shoots in quadrat
+\item Additional shoot selected for microepiphyte biomass, scraping biofilm with glass slide filtering onto GF/C filters, dried and weighed
+\item Eelgrass and macroalgae biomass: biomass was separated and dried in a desiccator oven at 60$^{\circ}$C for 48 hours.
+\item Our was to use temperature data recorded as close to our sites and at as temporally fine scale as possible
+\item Combined available historic climate data for each site, pooling across the Hakai CTD and sensor netwrok data (CITE website)
+\item For a given site and year, the frequency of temperature measurements varied considerably, as such we averaged the temperature observations across the summer months for each site (with summer defined as May to August in a given year).
+\end{itemize}
+
+\end{enumerate}
+
+% 
+% \item Eelgrass shoots were broken off at the first rhizome node and all shoots from within a quadrat placed within a 500 $\mu$m mesh bag, including all macroalgae and epifauna. Samples were placed on ice and processed within 24 hours.
+% \item Harvested aboveground seagrass biomass as a measure of density and dry weight
+% \item biometric measurements: number of seagrass blades, length, width of longest blade.
+% \item 3 parallel transects, 15 m apart, three 0.25 $m^2$ 5m apart creating a 3x3 array
+% \item Collected one shoot just outside each quadrat sealed underwater in a sterile plastic bag at the location of collection.
+% \item Swabs were taken from the second oldest blade, from an area with minimal to no epibiota and 10 cm in length, rinsing the area for 10 seconds with filtered seawater (0.22$\mu$m) to remove attached organisms, and swabbed using Puritan sterile swabs for 10 seconds.
+% \item Swabs were placed in cryotube and placed in a -80${\circ}$C freezer within 6 hours of sampling and until DNA extraction
+% \item Extracted DNA from swabs using Qiagen Powersoil---htp 96 well DNA extraction Kit (Carlsbad, CA): V4 region of 18S rRNA gene was targeted for amplification using primers E572F: 5'-AYGGTATCTRATCRTCTTYG-3' and PCR, library construction, and Illumina MiSeq amplicon sequencing were carried out at the Integrated Microbiome Resource Facility, Centre for Comparative Genomics and Evolutionary Bioinformatics at Dalhousie University Halifax, Canada using standard protocols (Comeau et al. 2011)
+% \item 16S DNA extraction: MoBio PowerSoilVR -htp 96 well DNA extraction kit (Carlsbad, CA), V4 region of the 16S rRNA gene in Bacteria and Archaea was targeted for amplification using redesigned versions of the primers 515f/806r as described by Lemay et al. 2018a. Details in Sanders-Smith et al. 2020
+% \item sampled microbial epibionts were sampled from shoots within 2 hours of collection under sterile conditions
+% \item Filtered out sequences for \emph{Zostera}, those unassigned at the domain level, Metazoans unlikley to be strongly interacting with \emph{Zostera} such as mussels ,and macroalgal sequences as their origin was unclear and may be propagules from nearby intertidal and subtidal rocky substrates
+% \item Removed OTUs with fewer than 2 reads for that sample to minimize the impact of barcode switching, and OTUs with fewer than 250 total reads and samples with low read counts (<1,000 reads/sample)
+% \item See Segovia et al.2020 for methods for sequence data analysis.
+
+
+% Sp considered core seagrass epibiota if present in 50% of samples and present in all years
+
+% \begin{figure}[ht]\centering\hfill
+%  \centering
+%  \includegraphics[width=0.75 \textwidth]{..//github/Calvert_O-Connor_eelgrass/m2m/figures/siteMap.pdf}
+% \label{fig:map}
+% \end{figure}
+\newpage
+\subsection*{Statistical Analysis}
+
+\subsection*{Microbe sub-model}
+The sub-model describes the processes that shape the changes in microbial community diversity over time for $1$ to $n$ sites in our dataset. We use hierarchical modeling to partition sources of variation including measurement error, and site-level differences. In particular, we assume that a observed change in diversity for site $i$, $Y_{\text{micro}_{i}}$ follows a normal distribution.
+
+\begin{align}
+  y_{\text{micro}} = \alpha_{\text{grandMicro}} + \alpha_{\text{site}_i} + \beta_{\text{year}_i} \times year + \sigma^2\\
+  \alpha_{\text{microSite}} = \alpha_{\text{grandMicro}} + \alpha_{\text{site}_i}\\
+\end{align}
+
+The latent parameter $\alpha_{\text{grandMicro}}$ represents a value that is independent of site, $\alpha_{\text{site},j}$ and  site-level offsets from that diversity value, $\sigma^2$ is measurement error. Of these parameters, $\boldsymbol{\alpha_{\text{microSite}}}$ is shared by the macro community sub-model.
+
+\subsection*{Macro sub-model}
+The macro-community sub-model describes the processes that determine the community diversity for $1$ to $n$ sites in relation to the microbial diversity. We predict that macro community diversity will be shaped by habitat structure, including the biomass of macroalgae, bed area, depth, and the distance from the bed's edge. The diversity of the microbial community, however, may further mitigate the effects of temperature, salinity, and biomass, such that such that an observation of micro diversity at a given site $i$ under set $g$ of temperatures, salinity, and seagrass biomass $(temp_j, salinity_j, biomass_j)$ contributes to observations of macro diversity, $Y_{\text{macro}_{i,j}}$ (which we $z$-scored to allow direct comparison of cues).
+
+\begin{align}
+  \beta_{\text{temp}} = \alpha_{\text{temp},j} + \beta_{\text{micro.temp}} \cdot \alpha_{\text{microSite},j} \\
+  % \beta_{\text{salinity}} = \alpha_{\text{salinity},j} + \beta_{\text{micro.salinity}} \cdot \alpha_{\text{microSite},j} \nonumber \\
+  \beta_{\text{LAI}} = \alpha_{\text{LAI},j} + \beta_{\text{micro.LAI}} \cdot \alpha_{\text{microSite},j}
+\end{align}
+
+\begin{align}
+ y_{\text{macro}} = \alpha_{\text{grandMacro}} + \alpha_{\text{site}_j} + \beta_{\text{year}_j} \cdot year + \beta_{\text{temp}_j} \cdot temp\  + \\ 
+ \beta_{\text{LAI}_j} \cdot LAI + \beta_{\text{depth}_j} \cdot depth   %\beta_{\text{distance\ to\ edge}_j} \cdot distEdge
+\end{align}
+
+
+% The sub-model describes the processes that shape the changes in microbial community diversity over time for $1$ to $n$ sites in our dataset. We use hierarchical modeling to partition sources of variation including measurement error, and site-level differences. In particular, we assume that a observed change in diversity for site $i$, $Y_{\text{microDiv}_{i}}$ follows a normal distribution.
+% 
+% \begin{align}
+%   Y_{\text{microDiv}_{i}} \sim \mathcal{N}(\mu_{i}, \sigma_{\text{micro}}^2)
+% \end{align}
+% with
+% \begin{align}
+%   \mu_{i} = \alpha_{\text{grand}} + \alpha_{\text{site}_j}
+% \end{align}
+% \noindent where $\alpha_{\text{site}_i}$ is an element of the normal random vectors:
+% 
+% \begin{align}
+%   \boldsymbol{\alpha_{\text{site}}} = \{\alpha_{\text{site}_1}, ..., \alpha_{\text{site}_n}\}^T \text{ such that } \boldsymbol{\alpha_{\text{site}}} \sim \mathcal{N}(0, \sigma_{\text{site}}^2) \\
+%   \nonumber
+% \end{align}
+% 
+% \noindent The latent parameter $\alpha_{\text{grandMicro}}$ represents a value that is independent of site, $\alpha_{\text{site},i}$ and  site-level offsets from that diversity value, $\sigma^2_{\text{m}}$ is measurement error, and $\sigma^2_{\text{site}}$ represents site-level variances in diversity metrics. Of these parameters, $\boldsymbol{\alpha_{\text{div}}}$ is shared by the macro community sub-model.
+% 
+% \subsection*{Maco community sub-model}
+% 
+% The macro-community sub-model describes the processes that determine the community diversity for $1$ to $n$ sites in relation to the microbial diversity. We assume that an observation of diversity at a given site $i$ under set $g$ of temperatures, salinity, and seagrass biomass $(t_g, s_g, b_g)$, $Y_{\text{macroDiv}_{i,g}}$ (which we $z$-scored to allow direct comparison of cues) has the following normal distribution:
+% 
+% \begin{align}
+%   Y_{\text{macroDiv}_{i,g}} \sim \mathcal{N}(\mu_{i,g}, \sigma_{\text{d}}^2)
+% \end{align}
+% with
+% \begin{align} 
+%   \mu_{i,g} = \alpha_{\text{macroDiv},k} + \beta_{\text{temp}_k} \cdot t_g  +  \beta_{\text{salinity}_k} \cdot s_g +  \beta_{\text{biomass}_k} \cdot b_g 
+% \end{align}
+% and
+% \begin{align} 
+%   \beta_{\text{temp}_k}= \alpha_{\text{temp},k} + \beta_{\text{mciro.temp}} \cdot \alpha_{\text{micro},k} \\
+%   \beta_{\text{salinity}_k}= \alpha_{\text{salinity},k} + \beta_{\text{micro.salinity}} \cdot \alpha_{\text{micro},k} \nonumber \\
+%   \beta_{\text{biomass}_k}= \alpha_{\text{biomass},k} + \beta_{\text{micro.biomass}} \cdot \alpha_{\text{micro},k} \nonumber
+% \end{align}
+% 
+% \noindent where $\alpha_{\text{macro}_k}$, $\alpha_{\text{temp}_k}$, $\alpha_{\text{salinity}_k}$, and $\alpha_{\text{biomass}_k}$ are elements of the normal random vectors:
+% 
+% \begin{align}
+%   \boldsymbol{\alpha_{\text{macro}}} = \{\alpha_{\text{macro}_1}, ..., \alpha_{\text{macro}_n}\}^T \text{ such that } \boldsymbol{\alpha_{\text{macro}}} \sim \mathcal{N}(\mu_{\text{macro}}, \sigma_{\text{macro}}^2) \\
+%   \boldsymbol{\alpha_{\text{temp}}} = \{\alpha_{\text{temp}_1}, ..., \alpha_{\text{temp}_n}\}^T \text{ such that } \boldsymbol{\alpha_{\text{temp}}} \sim \mathcal{N}(\mu_{\text{temp}}, \sigma_{\text{temp}}^2) \nonumber \\
+%   \boldsymbol{\alpha_{\text{salinity}}} = \{\alpha_{\text{salinity}_1}, ..., \alpha_{\text{salinity}_n}\}^T \text{ such that } \boldsymbol{\alpha_{\text{salinity}}} \sim \mathcal{N}(\mu_{\text{salinity}}, \sigma_{\text{salinity}}^2) \nonumber \\
+%   \boldsymbol{\alpha_{\text{biomass}}} = \{\alpha_{\text{biomass}_1}, ..., \alpha_{\text{biomass}_n}\}^T \text{ such that } \boldsymbol{\alpha_{\text{biomass}}} \sim \mathcal{N}(\mu_{\text{biomass}}, \sigma_{\text{biomass}}^2) \nonumber
+% \end{align}
+
+\subsection*{Beta diversity}
+
+\begin{align}
+y_{\text{beta}} \sim Normal(\mu, \sigma_{\text{e}}^2)
+  y_{\text{micro}} = \alpha_{\text{grandMicro}} + \alpha_{\text{site}_i} + \beta_{\text{year}_i} \times year + \sigma^2\\
+  \alpha_{\text{microSite}} = \alpha_{\text{grandMicro}} + \alpha_{\text{site}_i}\\
+\end{align}
+
+
+\section*{Results}
+
+\begin{itemize}
+\item Summary of community composition and characteristics:
+\begin{itemize}
+\item Identified \Sexpr{noProk} unique taxa of prokaryote and \Sexpr{noEuk} microeukaryote species.
+\item Across all sites, sampled \Sexpr{epiTot} invertebrates from \Sexpr{noEpi} taxa.
+\item Across the four years of sampling, the number of individual epifuana sampled per 0.25 $m^2$ of seagrass meadow varied considerably, from \Sexpr{noEpiMin} individuals sampled in 2015 in Goose SE to \Sexpr{noEpiMax} individuals sampled in 2014 at our Triquet S site. 
+\item Across all sites, the five most abundant taxa (\emph{Caprella.californica, Caprella.laeviuscula, Lacuna.vincta", Porcellidium, Gammaridea}) represented \Sexpr{perDomTaxa}\% of invertebrates collected, although abundance was not consistent across all sites or years.
+\item Many species were not present at each site: only \Sexpr{noSpAll} taxa were present at each site, but \Sexpr{perSpMost}\% of species were present at five or more sites.
+\end{itemize}
+\item Changes in alpha diversity over time:
+\begin{itemize}
+\item In modelling the relationship between prokaryote diversity and epifauna: we found a slight decline in prokaryote diversity over time (\Sexpr{meanProkYr}, 90\% UI: \Sexpr{lProkYr}, \Sexpr{uProkYr}), but an increase in epifauna diversity over time (\Sexpr{meanEpiYr}, 90\% UI: \Sexpr{lEpiYr}, \Sexpr{uEpiYr}). These estimates remained stable when the model was run with the last three years of data (results not shown).
+\item In trying to better understand the pathways through which microbial diversity may influence epifauna diversity, we found no evidence that the observed changes in prokaryote diversity interacting with changes in local temperature ($\beta_{micro.temp}$) or differences in eelgrass leaf area ($\beta_{micro.LAI}$) to drive the observed increase in epifauna diversity.
+\item In modelling of the relationship between microeukaryote diversity and epifauna diversity, we observed no change in microeukaryote diversity over time and similarly that temperature, eelgrass leaf area had no influence on how species are interacting across these organismal scales.
+and depth are not driving the overall increase in epifauna diversity we observe.
+\end{itemize}
+\item In addition to finding these overall trends in diversity, we found some variation in the magnitude and direction in which diversity is changing at our various sites
+\begin{itemize}
+\item The negative relationship estimated for prokaryote divresity across sites was driven by the declines observed at four of our study sites, while the remaining five communities showed no change
+\item While we observed no overall change in microeukaryote diversity, our model does estimate some changes at the site-level, with two of our most southern sites (Pruth pocket and Choked inner) increasing in diversity, but the nearby Choked sandspit experienced a decline in diversity. 
+\item Finally, we observed increases in epifauna diversity at four of our sites, while the remaining five sites showed no change.
+\item Contrary to our expectations, none of these shifts appear to be related to differences in site-level temperature or eelgrass LAI \ref{}
+\end{itemize}
+
+\end{itemize}
+
+\section*{Disucssion}
+
+\begin{enumerate}
+\item Summary of primary findings: some changes in diversity, changes in site level diversity---other alternate drivers not currently identified
+\item Compare the trends in eelgrass diversity we observed to meadows globally
+\item Our dataset relative to other existing diversity datasets
+\item Site-level differences and how contrast with stable temporal trends
+\item The advantages of our method and the broad application to linking biodiversity across scales
+\end{enumerate}
+
+% RDA plot---species pca constrained---with arrows
+% \begin{itemize}
+% \item Pruth: calm and protected inland channel on Calvert Island = short and thin seagrass 
+% \item Choked passage: outer exposed coast = long and wide seagrass
+% \item
+% \end{itemize}
+
+
+
+\section*{Figures}
+
+\begin{figure}[ht!]
+ \centering
+<< fig = TRUE, echo = FALSE, height = 4, width = 8 >>=
+
+require(xtable)
+require(rstan)
+require(cowplot)
+orderAbund <- c("goose_south_west", "triquet_north", "mcmullins_south", "goose_south_east","pruth_pocket", "choked_inner","choked_sandspit","triquet_south","mcmullins_north")
+
+tabSh16 <- data.frame(tabSh16)
+tabSh18 <- data.frame(tabSh18)
+
+fitSh16 <- data.frame(rstan::extract(mdl4Shan16))
+prokYr <- data.frame(fitSh16[,grep("b_year\\.", colnames(fitSh16))])
+
+prokSiteMean <- t(data.frame(colMeans(prokYr)))
+quantMiYr <- t(apply(prokYr, 2, quantile2575) )
+miYr <- data.frame(cbind(t(prokSiteMean), quantMiYr))
+
+orderLat <- list("choked_inner","choked_sandspit", "pruth_pocket","triquet_north","triquet_south", "goose_south_east", "goose_south_west", "mcmullins_north", "mcmullins_south")
+
+row.names(miYr) <- sort(unique(micro18$site))
+miYr$site <- row.names(miYr)
+names(miYr) <- c("mean", "X5", "X25", "X75", "X95", "site")
+
+microYr <- ggplot()  +
+  geom_pointrange(miYr, mapping = aes(x = factor(site, level = orderLat), y = mean, ymin=X5, ymax= X95), linewidth = 0.55, position=position_dodge(width=0.5), color = "maroon") +
+  geom_linerange( miYr, mapping = aes(x = factor(site, level = orderLat), ymin = X25, ymax= X75), size =1.25, position=position_dodge(width=0.5), color = "maroon") +
+  xlab("Site") + ylab("Change in diversity per year") + 
+  ylim(-0.75, 0.5) +
+  annotate("text", 4.5 ,0.48, label = "a) Prokaryotes", size = 5.5) +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black"),
+        axis.text = element_text(size = 10), axis.title.y = element_text(size = 15), axis.title.x = element_blank(),axis.text.x = element_text( size= 10,angle = 55, hjust=1), legend.key=element_rect(fill="white"),legend.text=element_text(size=25)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "black")
+
+### micro18
+fitSh18 <- data.frame(rstan::extract(mdl4Shan18))
+micro18Yr <- data.frame(fitSh18[,grep("b_year\\.", colnames(fitSh18))])
+
+micro18SiteMean <- t(data.frame(colMeans(micro18Yr)))
+quantMi18Yr <- t(apply(micro18Yr, 2, quantile2575) )
+micro18Yr <- data.frame(cbind(t(micro18SiteMean), quantMi18Yr))
+
+row.names(micro18Yr) <- sort(unique(micro18$site))
+micro18Yr$site <- row.names(micro18Yr)
+names(micro18Yr) <- c("mean", "X5", "X25", "X75", "X95", "site")
+
+micro18Yr <- ggplot()  +
+  geom_pointrange(micro18Yr, mapping = aes(x = factor(site, level = orderLat), y = mean, ymin = X5, ymax = X95), size = 0.55, position=position_dodge(width=0.5), color = "goldenrod") +
+  geom_linerange( micro18Yr, mapping = aes(x = factor(site, level = orderLat), ymin = X25, ymax = X75), size = 1.25, position=position_dodge(width = 0.5), color = "goldenrod") +
+  xlab("Site") + ylab("Change in diversity per year") +
+   ylim(-0.75, 0.5) +
+  annotate("text", 5 ,0.48, label = "b) Microeukaryote", size = 5.5) +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black"),
+        axis.text = element_text(size = 10), axis.title.x = element_text(size = 20),axis.title.y = element_text(size = 15),axis.text.x = element_text( size= 10,angle = 55, hjust=1), legend.key=element_rect(fill="white"),legend.text=element_text(size=25)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "black")
+
+
+# Macro
+macroYr <- data.frame(fitSh16[,grep("b_year2\\.", colnames(fitSh16))])
+
+macroSiteMean <- t(data.frame(colMeans(macroYr)))
+quantMaYr <- t(apply(macroYr, 2, quantile2575) )
+maYr <- data.frame(cbind(t(macroSiteMean), quantMaYr))
+
+
+row.names(maYr) <- sort(unique(micro18$site))
+maYr$site <- row.names(maYr)
+names(maYr) <- c("mean", "X5", "X25", "X75", "X95", "site")
+
+macroYr <- ggplot()  +
+  geom_pointrange(maYr, mapping = aes(x = factor(site, level = orderLat), y = mean, ymin=X5, ymax= X95), size =0.55, position=position_dodge(width=0.5), color = "cyan4") +
+  geom_linerange( maYr, mapping = aes(x = factor(site, level = orderLat), ymin = X25, ymax= X75), size =1.25, position=position_dodge(width=0.5), color = "cyan4") +
+  xlab("Site") + ylab("Change in diversity per year") +
+  annotate("text", 3.5 ,1, label = "c) Epifauna", size = 5.5) +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black"),
+        axis.text = element_text(size = 10), axis.title.y = element_text(size = 15), axis.title.x = element_blank(),axis.text.x = element_text( size= 10,angle = 55, hjust=1), legend.key=element_rect(fill="white"),legend.text=element_text(size=25)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "black")
+
+plot_grid( microYr,micro18Yr, macroYr , ncol = 3, nrow =1,align = "v")
+
+
+@
+\caption{Site-level changes in Shannon diversity over time for the a) prokaryote communties, b) microeukaryote communities and c) epifauna communities. In general, our model estiamted a decline in the prokaryote diversity over time, while epifauna diveristy increased, but the microeukaryote community remained stable.}
+\label{fig:test}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[ht!]
+ \centering
+<< fig = TRUE, echo = FALSE, height = 8, width = 6 >>=
+# load("..//output/mdlShan16FourParaSimple.Rdata")
+load("..//output/mdlShan16ParamTLD_lumpedSp.Rdata")
+sumer16 <- summary(mdl4Shan16)$summary[c(
+   "mu_grand","sigmaSt","muyear", "sigmayear", "sigma_microy", 
+                                              "mu_grandM", "muyear2", "sigmayear2",
+                                              "mutempSt","sigmatempSt","muLAISt","sigmaLAISt",
+                                              "muDepth", 
+                                              "sigmaMacroSt","sigmaMacro_y",
+                                              "betaMicroxtemp","betaMicroxLAI"),
+    c("mean","25%", "75%","n_eff", "Rhat")]
+
+fitSh16 <- data.frame(rstan::extract(mdl4Shan16))
+
+quantile2575 <- function(x){
+  returnQuanilte <- quantile(x, prob = c(0.05, 0.25, 0.75,0.95))
+  return(returnQuanilte)
+}
+
+maTempSlopes <- data.frame(fitSh16[,grep("betatempSt\\.", colnames(fitSh16))])
+maTempMean <- t(data.frame(colMeans(maTempSlopes)))
+quantMaTemp <- t(apply(maTempSlopes, 2, quantile2575) )
+maTemp <- data.frame(cbind(t(maTempMean), quantMaTemp))
+
+row.names(maTemp) <- sort(unique(micro18$site))
+maTemp$site <- row.names(maTemp)
+names(maTemp) <- c("mean", "X5", "X25", "X75", "X95", "site")
+
+macroTemp16 <- ggplot()  +
+  geom_pointrange(maTemp, mapping = aes(x = factor(site, level = orderLat), y = mean, ymin=X5, ymax= X95), size =0.55, position=position_dodge(width=0.5), color = "maroon") +
+  geom_linerange( maTemp, mapping = aes(x = factor(site, level = orderLat), ymin = X25, ymax= X75), size =1.25, position=position_dodge(width=0.5), color = "maroon") +
+  xlab("Site") + ylab("Change per degree Celsius") +
+  annotate("text", 1 ,0.75, label = "a)", size = 5.5) +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black"),
+        axis.text = element_text(size = 10), axis.title = element_text(size = 12),axis.text.x = element_text( size= 10,angle = 55, hjust=1), legend.key=element_rect(fill="white"),legend.text=element_text(size=25)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "black")
+
+
+# LAI
+maLAISlopes <- data.frame(fitSh16[,grep("betaLAISt\\.", colnames(fitSh16))])
+maLAIMean <- t(data.frame(colMeans(maLAISlopes)))
+quantMaLAI <- t(apply(maLAISlopes, 2, quantile2575) )
+maLAI <- data.frame(cbind(t(maLAIMean), quantMaLAI))
+
+row.names(maLAI) <- sort(unique(micro18$site))
+maLAI$site <- row.names(maLAI)
+names(maLAI) <- c("mean", "X5", "X25", "X75", "X95", "site")
+
+macroLAI16 <- ggplot()  +
+  geom_pointrange(maLAI, mapping = aes(x = factor(site, level = orderLat), y = mean, ymin=X5, ymax= X95), size =0.55, position=position_dodge(width=0.5), color = "maroon") +
+  geom_linerange( maLAI, mapping = aes(x = factor(site, level = orderLat), ymin = X25, ymax= X75), size =1.25, position=position_dodge(width=0.5), color = "maroon") +
+  xlab("Site") + ylab("Change in diversity per unit LAI") +
+   annotate("text", 1 ,0.75, label = "b)", size = 5.5) +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black"),
+        axis.text = element_text(size = 10), axis.title = element_text(size = 12),axis.text.x = element_text( size= 10,angle = 55, hjust=1), legend.key=element_rect(fill="white"),legend.text=element_text(size=25)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "black")
+
+load("..//output/mdlShan18ParamTLD_lumpedSpp.Rdata")
+sumer18 <- summary(mdl4Shan18)$summary[c(
+  "mu_grand","sigmaSt","muyear", "sigmayear", "sigma_microy", 
+  "mu_grandM", "muyear2", "sigmayear2",
+  "mutempSt","sigmatempSt","muLAISt","sigmaLAISt",
+  "muDepth", 
+  "sigmaMacroSt","sigmaMacro_y",
+  "betaMicroxtemp","betaMicroxLAI"),
+  c("mean","25%", "75%","n_eff", "Rhat")]
+
+fitSh18 <- data.frame(rstan::extract(mdl4Shan18))
+
+maTempSlopes <- data.frame(fitSh18[,grep("betatempSt\\.", colnames(fitSh18))])
+maTempMean <- t(data.frame(colMeans(maTempSlopes)))
+quantMaTemp <- t(apply(maTempSlopes, 2, quantile2575) )
+maTemp <- data.frame(cbind(t(maTempMean), quantMaTemp))
+
+row.names(maTemp) <- sort(unique(micro18$site))
+maTemp$site <- row.names(maTemp)
+names(maTemp) <- c("mean", "X5", "X25", "X75", "X95", "site")
+
+macroTemp18 <- ggplot()  +
+  geom_pointrange(maTemp, mapping = aes(x = factor(site, level = orderLat), y = mean, ymin=X5, ymax= X95), size =0.55, position=position_dodge(width=0.5), color = "goldenrod") +
+  geom_linerange( maTemp, mapping = aes(x = factor(site, level = orderLat), ymin = X25, ymax= X75), size =1.25, position=position_dodge(width=0.5), color = "goldenrod") +
+  xlab("Site") + ylab("Change per degree Celsius") +
+  annotate("text", 1 ,0.7, label = "c)", size = 5.5) +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black"),
+        axis.text = element_text(size = 10), axis.title = element_text(size = 12),axis.text.x = element_text( size= 10,angle = 55, hjust=1), legend.key=element_rect(fill="white"),legend.text=element_text(size=25)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "black")
+
+
+# LAI
+maLAISlopes <- data.frame(fitSh18[,grep("betaLAISt\\.", colnames(fitSh18))])
+maLAIMean <- t(data.frame(colMeans(maLAISlopes)))
+quantMaLAI <- t(apply(maLAISlopes, 2, quantile2575) )
+maLAI <- data.frame(cbind(t(maLAIMean), quantMaLAI))
+
+row.names(maLAI) <- sort(unique(micro18$site))
+maLAI$site <- row.names(maLAI)
+
+names(maLAI) <- c("mean", "X5", "X25", "X75", "X95", "site")
+
+macroLAI18 <- ggplot()  +
+  geom_pointrange(maLAI, mapping = aes(x = factor(site, level = orderLat), y = mean, ymin=X5, ymax= X95), size =0.55, position=position_dodge(width=0.5), color = "goldenrod") +
+  geom_linerange( maLAI, mapping = aes(x = factor(site, level = orderLat), ymin = X25, ymax= X75), size =1.25, position=position_dodge(width=0.5), color = "goldenrod") +
+  xlab("Site") + ylab("Change in diversity per unit LAI") +
+  annotate("text", 1 ,1, label = "d)", size = 5.5) +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black"),
+        axis.text = element_text(size = 10), axis.title = element_text(size = 12),axis.text.x = element_text( size= 10,angle = 55, hjust=1), legend.key=element_rect(fill="white"),legend.text=element_text(size=25)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "black")
+
+
+plot_grid( macroTemp16, macroLAI16, macroTemp18, macroLAI18 , ncol = 2, nrow =2,align = "v", rel_widths = c(1,1,1))
+
+
+@
+\caption{We found no relationship between prokaryote diversity and epifauna responses to a) temperature and b) leaf area index, or between microeukaryote diversity and c) temperature and d) leaf area index, with the exception of McMullins North, for which diversity declines as LAI increased in both models.}
+\label{fig:test}
+\end{figure}
+
+\clearpage
+
+% \begin{figure}[ht!]
+% \centering
+%     \includegraphics[width= 1 \textwidth]{..//figures/relAbundGrazer.pdf}%,
+%     \caption{The overall diversity of the epifauna communities increased over time, but across years we observed considerable variation in the composition and relative abundance of species within each community. Depicted is the relative abundance of taxa with ten or more individuals observed in a given year of sampling. Taxa with fewer than 10 individuals have been grouped as "other." } 
+%     \label{fig:betaAlphaGrad}  
+% \end{figure}
+% \newpage
+
+
+\section*{Supporting Information}
+
+<<label= prok16S, echo=FALSE , results= tex >>=
+
+require(xtable)
+require(rstan)
+require(cowplot)
+
+quantile2575 <- function(x){
+  returnQuanilte <- quantile(x, prob = c(0.05, 0.25, 0.75,0.95))
+  return(returnQuanilte)
+}
+
+
+fitSh16 <- fitSh16[, c("mu_grand","sigmaSt","muyear", "sigmayear", "sigma_microy", 
+                                              "mu_grandM", "muyear2", "sigmayear2",
+                                              "mutempSt","sigmatempSt","muLAISt","sigmaLAISt",
+                                              "muDepth", 
+                                              "sigmaMacroSt","sigmaMacro_y",
+                                              "betaMicroxtemp","betaMicroxLAI")]
+
+
+quantSh16 <- t(apply(fitSh16, 2, quantile2575) )
+
+tabSh16 <- cbind(sumer16, quantSh16)
+# rownames(tabSh16) <- c("Grand mean", "Temperature", "Salinity", "Biomass","LAI", "Macroalgae biomass", "Sigma Temperature", "Sigma Salinity", "Sigma Biomass", "Sigma LAI", "Sigma Macroalgae", "Error")
+tabSh16 <- tabSh16[,c("mean","5%","25%", "75%","95%","n_eff", "Rhat")]
+print(xtable(tabSh16, caption="Summary output from a joint Bayesian model linking changes in Shannon diversity of prokaryote (16S) and macroepifauna diversity in relations to environmental conditions and habitat structure, with partial pooling for site. The model includes standardized environmental cues that are $z$-scored to allow comparisons to be made across parameters. In addition to the mean model estimates, both the 50$\\%$, and 90$\\%$ uncertainty intervals are also reported.",label = "tabSh"),include.rownames=TRUE, caption.placement="top", hline.after=c(-1,0))
+
+@
+
+<<label= euk18S, echo=FALSE , results= tex >>=
+  
+require(xtable)
+require(rstan)
+
+# load("..//output/mdlShan18FourParaSimple.Rdata")
+# load("..//output/mdlShan18ParamTLD_lumpedSpp.Rdata")
+# sumer18 <- summary(mdl4Shan18)$summary[c(
+#   "mu_grand","sigmaSt","muyear", "sigmayear", "sigma_microy", 
+#                                               "mu_grandM", "muyear2", "sigmayear2",
+#                                               "mutempSt","sigmatempSt","muLAISt","sigmaLAISt",
+#                                               "muDepth", 
+#                                               "sigmaMacroSt","sigmaMacro_y",
+#                                               "betaMicroxtemp","betaMicroxLAI"),
+#   c("mean","25%", "75%","n_eff", "Rhat")]
+# 
+# fitSh18 <- data.frame(rstan::extract(mdl4Shan18))
+fitSh18 <- fitSh18[, c( "mu_grand","sigmaSt","muyear", "sigmayear", "sigma_microy", 
+                                              "mu_grandM", "muyear2", "sigmayear2",
+                                              "mutempSt","sigmatempSt","muLAISt","sigmaLAISt",
+                                              "muDepth", 
+                                              "sigmaMacroSt","sigmaMacro_y",
+                                              "betaMicroxtemp","betaMicroxLAI")]
+
+quantSh18 <- t(apply(fitSh18, 2, quantile2575) )
+
+tabSh18 <- cbind(sumer18, quantSh18)
+# rownames(tabSh18) <- c("Grand mean", "Temperature", "Salinity", "Biomass","LAI", "Macroalgae biomass", "Sigma Temperature", "Sigma Salinity", "Sigma Biomass", "Sigma LAI", "Sigma Macroalgae", "Error")
+tabSh18 <- tabSh18[,c("mean","5%","25%", "75%","95%","n_eff", "Rhat")]
+print(xtable(tabSh18, caption="Summary output from a joint Bayesian model linking changes in Shannon diversity of microeukaryotes (18S) and macroepifauna diversity in relations to environmental conditions and habitat structure, with partial pooling for site. The model includes standardized environmental cues that are $z$-scored to allow comparisons to be made across parameters. In addition to the mean model estimates, both the 50$\\%$, and 90$\\%$ uncertainty intervals are also reported.",label = "tabSh"),include.rownames=TRUE, caption.placement="top", hline.after=c(-1,0))
+
+@
+
+<<label= prok16S, echo=FALSE , results= tex >>=
+
+quantile2575 <- function(x){
+  returnQuanilte <- quantile(x, prob = c(0.05, 0.25, 0.75,0.95))
+  return(returnQuanilte)
+}
+
+# load("..//output/mdlShan16FourParaSimple.Rdata")
+load("..//output/mdlShan16ParamTLD_3yrMacro.Rdata")
+sumer16 <- summary(mdl4Shan16_3yr)$summary[c(
+   "mu_grand","sigmaSt","muyear", "sigmayear", "sigma_microy", 
+                                              "mu_grandM", "muyear2", "sigmayear2",
+                                              "mutempSt","sigmatempSt","muLAISt","sigmaLAISt",
+                                              "muDepth", 
+                                              "sigmaMacroSt","sigmaMacro_y",
+                                              "betaMicroxtemp","betaMicroxLAI"),
+    c("mean","25%", "75%","n_eff", "Rhat")]
+
+fitSh16 <- data.frame(rstan::extract(mdl4Shan16))
+fitSh16 <- fitSh16[, c("mu_grand","sigmaSt","muyear", "sigmayear", "sigma_microy", 
+                                              "mu_grandM", "muyear2", "sigmayear2",
+                                              "mutempSt","sigmatempSt","muLAISt","sigmaLAISt",
+                                              "muDepth", 
+                                              "sigmaMacroSt","sigmaMacro_y",
+                                              "betaMicroxtemp","betaMicroxLAI")]
+
+
+quantSh16 <- t(apply(fitSh16, 2, quantile2575) )
+
+tabSh16 <- cbind(sumer16, quantSh16)
+# rownames(tabSh16) <- c("Grand mean", "Temperature", "Salinity", "Biomass","LAI", "Macroalgae biomass", "Sigma Temperature", "Sigma Salinity", "Sigma Biomass", "Sigma LAI", "Sigma Macroalgae", "Error")
+tabSh16 <- tabSh16[,c("mean","5%","25%", "75%","95%","n_eff", "Rhat")]
+print(xtable(tabSh16, caption="Summary output from a joint Bayesian model linking changes in Shannon diversity of prokaryote (16S) and macroepifauna diversity in relations to environmental conditions and habitat structure, with partial pooling for site, but with the first year of epifauna sampling removed. The model includes standardized environmental cues that are $z$-scored to allow comparisons to be made across parameters. In addition to the mean model estimates, both the 50$\\%$, and 90$\\%$ uncertainty intervals are also reported.",label = "tabSh"),include.rownames=TRUE, caption.placement="top", hline.after=c(-1,0))
+
+@
+
+<<label= euk18S3yr, echo=FALSE , results= tex >>=
+  
+# load("..//output/mdlShan18FourParaSimple.Rdata")
+load("..//output/mdlShan18ParamTLD_3yrMacro.Rdata")
+sumer18 <- summary(mdl4Shan18_3yr)$summary[c(
+  "mu_grand","sigmaSt","muyear", "sigmayear", "sigma_microy", 
+                                              "mu_grandM", "muyear2", "sigmayear2",
+                                              "mutempSt","sigmatempSt","muLAISt","sigmaLAISt",
+                                              "muDepth", 
+                                              "sigmaMacroSt","sigmaMacro_y",
+                                              "betaMicroxtemp","betaMicroxLAI"),
+  c("mean","25%", "75%","n_eff", "Rhat")]
+
+fitSh18 <- data.frame(rstan::extract(mdl4Shan18))
+fitSh18 <- fitSh18[, c( "mu_grand","sigmaSt","muyear", "sigmayear", "sigma_microy", 
+                                              "mu_grandM", "muyear2", "sigmayear2",
+                                              "mutempSt","sigmatempSt","muLAISt","sigmaLAISt",
+                                              "muDepth", 
+                                              "sigmaMacroSt","sigmaMacro_y",
+                                              "betaMicroxtemp","betaMicroxLAI")]
+
+quantSh18 <- t(apply(fitSh18, 2, quantile2575) )
+
+tabSh18 <- cbind(sumer18, quantSh18)
+# rownames(tabSh18) <- c("Grand mean", "Temperature", "Salinity", "Biomass","LAI", "Macroalgae biomass", "Sigma Temperature", "Sigma Salinity", "Sigma Biomass", "Sigma LAI", "Sigma Macroalgae", "Error")
+tabSh18 <- tabSh18[,c("mean","5%","25%", "75%","95%","n_eff", "Rhat")]
+print(xtable(tabSh18, caption="Summary output from a joint Bayesian model linking changes in Shannon diversity of microeukaryotes (18S) and macroepifauna diversity in relations to environmental conditions and habitat structure, with partial pooling for site, but with the first year of epifauna sampling removed. The model includes standardized environmental cues that are $z$-scored to allow comparisons to be made across parameters. In addition to the mean model estimates, both the 50$\\%$, and 90$\\%$ uncertainty intervals are also reported.",label = "tabSh"),include.rownames=TRUE, caption.placement="top", hline.after=c(-1,0))
+
+@
+% \section*{Discussion}
+\newpage
+
+\end{document}
+
+% \begin{itemize}
+% \item
+% \end{itemize}
+% \newpage
+% \begin{figure}[ht]\centering\hfill
+%  \centering
+%  \includegraphics[width=\textwidth]{..//figures/cueSlopes18S.pdf}
+% \caption{Estiamted site-level responses to (a) temperature and (b) eelgrass biomass in responses to the diversity of the microeukaryotes community. The black line represents the mean linear relationship between the estimated microbial effect and the slope of the epifauna diversity's response to climate and habitat cues respectively. Each cross represents a site and depict the 50\% uncertainty interval.}
+% \label{fig:cueslope18}
+% \end{figure}
+% 
+% \newpage
+% \begin{figure}[ht]\centering\hfill
+%  \centering
+%  \includegraphics[width=\textwidth]{..//figures/microSiteLevel18S.pdf}
+% \caption{Difference in diversity across sites}
+% \label{fig:diffDiv18}
+% \end{figure}
+% \newpage
+% 
+% \begin{figure}[ht]\centering\hfill
+%  \centering
+%  \includegraphics[width=\textwidth]{..//figures/microYrSiteLevel18S.pdf}
+% \caption{Change in diversity over time}
+% \label{fig:slopeYr18}
+% \end{figure}
+% 
+% \newpage
+% \begin{figure}[ht]\centering\hfill
+%  \centering
+%  \includegraphics[width=\textwidth]{..//figures/macroTempBiomassSiteLevel18S.pdf}
+% \caption{Response to temperature and biomass}
+% \label{fig:tempBio18}
+% \end{figure}
+
+% \newpage
+% \begin{figure}[ht]\centering\hfill
+%  \centering
+%  \includegraphics[width=\textwidth]{..//figures/cueSlope16S.pdf}
+% \caption{Estiamted site-level responses to (a) temperature and (b) eelgrass biomass in responses to the diversity of the prokaryote community. The black line represents the mean linear relationship between the estimated microbial effect and the slope of the epifauna diversity's response to climate and habitat cues respectively. Each cross represents a site and depict the 50\% uncertainty interval.}
+% \label{fig:cueslope16}
+% \end{figure}
+% 
+% \newpage
+% \begin{figure}[ht]\centering\hfill
+%  \centering
+%  \includegraphics[width=\textwidth]{..//figures/microSiteLevel16S.pdf}
+% \caption{Difference in diversity across sites}
+% \label{fig:diffDiv16}
+% \end{figure}
+% \newpage
+% 
+% \begin{figure}[ht]\centering\hfill
+%  \centering
+%  \includegraphics[width=\textwidth]{..//figures/microYrSiteLevel16S.pdf}
+% \caption{Change in diversity over time}
+% \label{fig:slopeYr16}
+% \end{figure}
+% 
+% \newpage
+% \begin{figure}[ht]\centering\hfill
+%  \centering
+%  \includegraphics[width=\textwidth]{..//figures/macroTempBiomassSiteLevel16S.pdf}
+% \caption{Response to temperature and biomass}
+% \label{fig:tempBio16}
+% \end{figure}
