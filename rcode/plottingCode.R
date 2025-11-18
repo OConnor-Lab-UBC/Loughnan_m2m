@@ -5,6 +5,7 @@ options(mc.cores = parallel::detectCores())
 
 require(ggplot2)
 require(dplyr)
+library(tidyr)
 library(rnaturalearth)
 library(sf)
 library(viridis)
@@ -125,10 +126,133 @@ temp <- subset(fiveAg2, regionYr == "triquet_south_2015")
 
 micro18 <- read.csv("data/MASTER_microeuk_ASV_level_1000_COVERAGE_RAREF.csv", header=T)
 
+m18 <- micro18 %>%
+  pivot_longer(
+    cols = starts_with("ASV"),  # Columns to pivot (can also be a range like Score_Test1:Score_Test3 or a vector of names)
+    names_to = "asv",            # Name for the new column holding the original column names
+    values_to = "abund"           # Name for the new column holding the values
+  )
+
+m18 <- subset(m18, abund > 0)
+
+m18$regionYr <- as.factor(paste(m18$site, m18$year, sep = "_"))
+m18Ag <- aggregate(m18["abund"], m18[c("site","year","regionYr", "asv")], FUN = sum)
+
+rYr <- (unique(m18Ag$regionYr))
+
+m18T <- vector()
+
+for(i in 1:length(rYr)){
+  temp <- subset(m18Ag, regionYr == rYr[i])
+  temp <- temp[order(temp$abund),]
+  temp$rank <- rep(1:nrow(temp))
+  temp15 <- tail(temp, n = 15)
+  sumSite <- sum(temp15$abund)
+  temp15$relAbund <- temp15$abund/sumSite
+  m18T <- rbind(m18T, temp15)
+}
+
+rmSite <- c("goose_south_east","goose_south_west", "mcmullins_north", "mcmullins_south")
+m18T2 <- m18T[!m18T$site %in% rmSite,]
+
+# taxon5Name<- c("Balanidae" ,"Bivalvia","Buccinoidea","Caprellidae",
+#                "Cerithioidea", "Cnidaria", "Corophiidae", "Decapoda",            
+#                "Eunicida", "Gammaridean", "Halacaridae", "Harpacticoida",       
+#                "Isopoda","Littorinoidea","Ostracoda", "Phyllaplysia.taylori",
+#                "Phyllodocida","Rissoidae", "Tanaidacea","Trochoidea","Other")
+temp <- subset(fiveAg2, site == "choked_sandspit")
+
+pdf("figures/relAbundMicro18.pdf", height = 7, width = 12)
+micro18RA <- ggplot(m18T2, aes(year, relAbund,fill = asv)) +
+  geom_bar(stat="identity", width=1, color="black", position = "stack") + 
+  scale_y_continuous(expand = c(0,0)) + #height of the column equal the value, stacked
+  facet_wrap( ~ site, nrow = 2) + 
+  ylab("Relative Abundance") +
+  # scale_fill_manual(values=colour_taxa, labels = taxonL) + theme_bw() + ylab("Relative abundance") +
+  theme(strip.background = element_rect(fill="snow2")) + 
+  theme(panel.spacing = unit(0.2, "lines")) + 
+  theme (axis.title.x=element_blank(),
+         #axis.text.x=element_blank(),
+         axis.text.x=element_text(angle = 90, hjust = 1, size = 10),
+         axis.ticks.x=element_blank(),
+         axis.text.y=element_text(size = 14), #change font size of numbers
+         axis.title.y=element_text(size = 18), #change font size of y title
+         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+         panel.background = element_blank(), axis.line = element_line(colour = "black"),
+         legend.text=element_text(size=11),
+         legend.key.height = unit(0.55, "cm"),
+         legend.title = element_blank(),
+         plot.title = element_text(hjust = 0.5, size = 18, face="bold")) +
+  guides(fill = guide_legend(ncol = 2)) #center plot title and set font size
+micro18RA
+dev.off()
+
 # prokaryotes 
+
+
 
 prok16 <- read.csv("data/MASTER_prokary_ASV_level_1000_COVERAGE_RAREF.csv", header=T)
 
+p16 <- prok16 %>%
+  pivot_longer(
+    cols = starts_with("ASV"),  # Columns to pivot (can also be a range like Score_Test1:Score_Test3 or a vector of names)
+    names_to = "asv",            # Name for the new column holding the original column names
+    values_to = "abund"           # Name for the new column holding the values
+  )
+
+p16 <- subset(p16, abund > 0)
+
+p16$regionYr <- as.factor(paste(p16$site, p16$year, sep = "_"))
+p16Ag <- aggregate(p16["abund"], p16[c("site","year","regionYr", "asv")], FUN = sum)
+
+rYr <- (unique(p16Ag$regionYr))
+
+p16T <- vector()
+
+for(i in 1:length(rYr)){
+  temp <- subset(p16Ag, regionYr == rYr[i])
+  temp <- temp[order(temp$abund),]
+  temp$rank <- rep(1:nrow(temp))
+  temp15 <- tail(temp, n = 15)
+  sumSite <- sum(temp15$abund)
+  temp15$relAbund <- temp15$abund/sumSite
+  p16T <- rbind(p16T, temp15)
+}
+
+rmSite <- c("goose_south_east","goose_south_west", "mcmullins_north", "mcmullins_south")
+p16T2 <- p16T[!p16T$site %in% rmSite,]
+
+# taxon5Name<- c("Balanidae" ,"Bivalvia","Buccinoidea","Caprellidae",
+#                "Cerithioidea", "Cnidaria", "Corophiidae", "Decapoda",            
+#                "Eunicida", "Gammaridean", "Halacaridae", "Harpacticoida",       
+#                "Isopoda","Littorinoidea","Ostracoda", "Phyllaplysia.taylori",
+#                "Phyllodocida","Rissoidae", "Tanaidacea","Trochoidea","Other")
+temp <- subset(fiveAg2, site == "choked_sandspit")
+
+pdf("figures/relAbundprok16.pdf", height = 7, width = 12)
+prok16RA <- ggplot(p16T2, aes(year, relAbund,fill = asv)) +
+  geom_bar(stat="identity", width=1, color="black", position = "stack") + 
+  scale_y_continuous(expand = c(0,0)) + #height of the column equal the value, stacked
+  facet_wrap( ~ site, nrow = 2) + 
+  ylab("Relative Abundance") +
+  # scale_fill_manual(values=colour_taxa, labels = taxonL) + theme_bw() + ylab("Relative abundance") +
+  theme(strip.background = element_rect(fill="snow2")) + 
+  theme(panel.spacing = unit(0.2, "lines")) + 
+  theme (axis.title.x=element_blank(),
+         #axis.text.x=element_blank(),
+         axis.text.x=element_text(angle = 90, hjust = 1, size = 10),
+         axis.ticks.x=element_blank(),
+         axis.text.y=element_text(size = 14), #change font size of numbers
+         axis.title.y=element_text(size = 18), #change font size of y title
+         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+         panel.background = element_blank(), axis.line = element_line(colour = "black"),
+         legend.text=element_text(size=11),
+         legend.key.height = unit(0.55, "cm"),
+         legend.title = element_blank(),
+         plot.title = element_text(hjust = 0.5, size = 18, face="bold")) +
+  guides(fill = guide_legend(ncol = 2)) #center plot title and set font size
+prok16RA
+dev.off()
 
 
 
