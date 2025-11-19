@@ -399,7 +399,7 @@ macroYr <- ggplot()  +
   geom_pointrange(maYr, mapping = aes(x = factor(site, level = orderLat), y = mean, ymin=X5, ymax= X95), size =0.55, position=position_dodge(width=0.5), color = "cyan4") +
   geom_linerange( maYr, mapping = aes(x = factor(site, level = orderLat), ymin = X25, ymax= X75), size =1.25, position=position_dodge(width=0.5), color = "cyan4") +
   xlab("Site") + ylab("Change in diversity per year") +
-  annotate("text", 3.5 ,1, label = "c) Epifauna", size = 5.5) +
+  annotate("text", 3.5 ,.15, label = "c) Epifauna", size = 5.5) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black"),
         axis.text = element_text(size = 10), axis.title.y = element_text(size = 15), axis.title.x = element_blank(),axis.text.x = element_text( size= 10,angle = 55, hjust=1), legend.key=element_rect(fill="white"),legend.text=element_text(size=25)) +
@@ -419,7 +419,7 @@ plot_grid( microYr,micro18Yr, macroYr , ncol = 3, nrow =1,align = "v")
  \centering
 << fig = TRUE, echo = FALSE, height = 8, width = 6 >>=
 # load("..//output/mdlShan16FourParaSimple.Rdata")
-load("..//output/mdlShan16ParamTLD_lumpedSp.Rdata")
+# load("..//output/mdlShan16ParamTLD_lumpedSp.Rdata")
 sumer16 <- summary(mdl4Shan16)$summary[c(
    "mu_grand","sigmaSt","muyear", "sigmayear", "sigma_microy", 
                                               "mu_grandM", "muyear2", "sigmayear2",
@@ -449,7 +449,7 @@ macroTemp16 <- ggplot()  +
   geom_pointrange(maTemp, mapping = aes(x = factor(site, level = orderLat), y = mean, ymin=X5, ymax= X95), size =0.55, position=position_dodge(width=0.5), color = "maroon") +
   geom_linerange( maTemp, mapping = aes(x = factor(site, level = orderLat), ymin = X25, ymax= X75), size =1.25, position=position_dodge(width=0.5), color = "maroon") +
   xlab("Site") + ylab("Change per degree Celsius") +
-  annotate("text", 1 ,0.75, label = "a)", size = 5.5) +
+  annotate("text", 1 ,0.15, label = "a)", size = 5.5) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black"),
         axis.text = element_text(size = 10), axis.title = element_text(size = 12),axis.text.x = element_text( size= 10,angle = 55, hjust=1), legend.key=element_rect(fill="white"),legend.text=element_text(size=25)) +
@@ -470,13 +470,13 @@ macroLAI16 <- ggplot()  +
   geom_pointrange(maLAI, mapping = aes(x = factor(site, level = orderLat), y = mean, ymin=X5, ymax= X95), size =0.55, position=position_dodge(width=0.5), color = "maroon") +
   geom_linerange( maLAI, mapping = aes(x = factor(site, level = orderLat), ymin = X25, ymax= X75), size =1.25, position=position_dodge(width=0.5), color = "maroon") +
   xlab("Site") + ylab("Change in diversity per unit LAI") +
-   annotate("text", 1 ,0.75, label = "b)", size = 5.5) +
+   annotate("text", 1 ,0.15, label = "b)", size = 5.5) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black"),
         axis.text = element_text(size = 10), axis.title = element_text(size = 12),axis.text.x = element_text( size= 10,angle = 55, hjust=1), legend.key=element_rect(fill="white"),legend.text=element_text(size=25)) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "black")
 
-load("..//output/mdlShan18ParamTLD_lumpedSpp.Rdata")
+# load("..//output/mdlShan18ParamTLD_lumpedSpp.Rdata")
 sumer18 <- summary(mdl4Shan18)$summary[c(
   "mu_grand","sigmaSt","muyear", "sigmayear", "sigma_microy", 
   "mu_grandM", "muyear2", "sigmayear2",
@@ -501,7 +501,7 @@ macroTemp18 <- ggplot()  +
   geom_pointrange(maTemp, mapping = aes(x = factor(site, level = orderLat), y = mean, ymin=X5, ymax= X95), size =0.55, position=position_dodge(width=0.5), color = "goldenrod") +
   geom_linerange( maTemp, mapping = aes(x = factor(site, level = orderLat), ymin = X25, ymax= X75), size =1.25, position=position_dodge(width=0.5), color = "goldenrod") +
   xlab("Site") + ylab("Change per degree Celsius") +
-  annotate("text", 1 ,0.7, label = "c)", size = 5.5) +
+  annotate("text", 1 ,0.15, label = "c)", size = 5.5) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black"),
         axis.text = element_text(size = 10), axis.title = element_text(size = 12),axis.text.x = element_text( size= 10,angle = 55, hjust=1), legend.key=element_rect(fill="white"),legend.text=element_text(size=25)) +
@@ -523,7 +523,7 @@ macroLAI18 <- ggplot()  +
   geom_pointrange(maLAI, mapping = aes(x = factor(site, level = orderLat), y = mean, ymin=X5, ymax= X95), size =0.55, position=position_dodge(width=0.5), color = "goldenrod") +
   geom_linerange( maLAI, mapping = aes(x = factor(site, level = orderLat), ymin = X25, ymax= X75), size =1.25, position=position_dodge(width=0.5), color = "goldenrod") +
   xlab("Site") + ylab("Change in diversity per unit LAI") +
-  annotate("text", 1 ,1, label = "d)", size = 5.5) +
+  annotate("text", 1 ,0.15, label = "d)", size = 5.5) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black"),
         axis.text = element_text(size = 10), axis.title = element_text(size = 12),axis.text.x = element_text( size= 10,angle = 55, hjust=1), legend.key=element_rect(fill="white"),legend.text=element_text(size=25)) +
@@ -631,7 +631,7 @@ sumer16 <- summary(mdl4Shan16_3yr)$summary[c(
                                               "betaMicroxtemp","betaMicroxLAI"),
     c("mean","25%", "75%","n_eff", "Rhat")]
 
-fitSh16 <- data.frame(rstan::extract(mdl4Shan16))
+fitSh16 <- data.frame(rstan::extract(mdl4Shan16_3yr))
 fitSh16 <- fitSh16[, c("mu_grand","sigmaSt","muyear", "sigmayear", "sigma_microy", 
                                               "mu_grandM", "muyear2", "sigmayear2",
                                               "mutempSt","sigmatempSt","muLAISt","sigmaLAISt",
@@ -662,7 +662,7 @@ sumer18 <- summary(mdl4Shan18_3yr)$summary[c(
                                               "betaMicroxtemp","betaMicroxLAI"),
   c("mean","25%", "75%","n_eff", "Rhat")]
 
-fitSh18 <- data.frame(rstan::extract(mdl4Shan18))
+fitSh18 <- data.frame(rstan::extract(mdl4Shan18_3yr))
 fitSh18 <- fitSh18[, c( "mu_grand","sigmaSt","muyear", "sigmayear", "sigma_microy", 
                                               "mu_grandM", "muyear2", "sigmayear2",
                                               "mutempSt","sigmatempSt","muLAISt","sigmaLAISt",
