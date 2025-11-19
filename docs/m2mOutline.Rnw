@@ -299,7 +299,13 @@ and depth are not driving the overall increase in epifauna diversity we observe.
 \item Finally, we observed increases in epifauna diversity at four of our sites, while the remaining five sites showed no change.
 \item Contrary to our expectations, none of these shifts appear to be related to differences in site-level temperature or eelgrass LAI \ref{}
 \end{itemize}
-
+\item NMDS plots:
+\begin{itemize}
+\item NMDS plots show a fair fit of the data (stress values range from 0.15-0.2) 
+\item Prokaryotes and microeukaryotes both depict some clustering across sites, plots within Chocked and Pruth are more similar to themselves, while Mcmullin, goose and Triquet exhibit a more similarity in their communities
+\item Microeukaryotes
+\item Epifauna:
+\end{itemize}
 \end{itemize}
 
 \section*{Disucssion}
@@ -399,7 +405,7 @@ macroYr <- ggplot()  +
   geom_pointrange(maYr, mapping = aes(x = factor(site, level = orderLat), y = mean, ymin=X5, ymax= X95), size =0.55, position=position_dodge(width=0.5), color = "cyan4") +
   geom_linerange( maYr, mapping = aes(x = factor(site, level = orderLat), ymin = X25, ymax= X75), size =1.25, position=position_dodge(width=0.5), color = "cyan4") +
   xlab("Site") + ylab("Change in diversity per year") +
-  annotate("text", 3.5 ,.15, label = "c) Epifauna", size = 5.5) +
+  annotate("text", 3.5 ,0.75, label = "c) Epifauna", size = 5.5) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black"),
         axis.text = element_text(size = 10), axis.title.y = element_text(size = 15), axis.title.x = element_blank(),axis.text.x = element_text( size= 10,angle = 55, hjust=1), legend.key=element_rect(fill="white"),legend.text=element_text(size=25)) +
@@ -449,7 +455,7 @@ macroTemp16 <- ggplot()  +
   geom_pointrange(maTemp, mapping = aes(x = factor(site, level = orderLat), y = mean, ymin=X5, ymax= X95), size =0.55, position=position_dodge(width=0.5), color = "maroon") +
   geom_linerange( maTemp, mapping = aes(x = factor(site, level = orderLat), ymin = X25, ymax= X75), size =1.25, position=position_dodge(width=0.5), color = "maroon") +
   xlab("Site") + ylab("Change per degree Celsius") +
-  annotate("text", 1 ,0.15, label = "a)", size = 5.5) +
+  annotate("text", 1 ,0.5, label = "a)", size = 5.5) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black"),
         axis.text = element_text(size = 10), axis.title = element_text(size = 12),axis.text.x = element_text( size= 10,angle = 55, hjust=1), legend.key=element_rect(fill="white"),legend.text=element_text(size=25)) +
@@ -470,7 +476,7 @@ macroLAI16 <- ggplot()  +
   geom_pointrange(maLAI, mapping = aes(x = factor(site, level = orderLat), y = mean, ymin=X5, ymax= X95), size =0.55, position=position_dodge(width=0.5), color = "maroon") +
   geom_linerange( maLAI, mapping = aes(x = factor(site, level = orderLat), ymin = X25, ymax= X75), size =1.25, position=position_dodge(width=0.5), color = "maroon") +
   xlab("Site") + ylab("Change in diversity per unit LAI") +
-   annotate("text", 1 ,0.15, label = "b)", size = 5.5) +
+   annotate("text", 1 ,0.25, label = "b)", size = 5.5) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black"),
         axis.text = element_text(size = 10), axis.title = element_text(size = 12),axis.text.x = element_text( size= 10,angle = 55, hjust=1), legend.key=element_rect(fill="white"),legend.text=element_text(size=25)) +
@@ -501,7 +507,7 @@ macroTemp18 <- ggplot()  +
   geom_pointrange(maTemp, mapping = aes(x = factor(site, level = orderLat), y = mean, ymin=X5, ymax= X95), size =0.55, position=position_dodge(width=0.5), color = "goldenrod") +
   geom_linerange( maTemp, mapping = aes(x = factor(site, level = orderLat), ymin = X25, ymax= X75), size =1.25, position=position_dodge(width=0.5), color = "goldenrod") +
   xlab("Site") + ylab("Change per degree Celsius") +
-  annotate("text", 1 ,0.15, label = "c)", size = 5.5) +
+  annotate("text", 1 ,0.5, label = "c)", size = 5.5) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black"),
         axis.text = element_text(size = 10), axis.title = element_text(size = 12),axis.text.x = element_text( size= 10,angle = 55, hjust=1), legend.key=element_rect(fill="white"),legend.text=element_text(size=25)) +
@@ -523,7 +529,7 @@ macroLAI18 <- ggplot()  +
   geom_pointrange(maLAI, mapping = aes(x = factor(site, level = orderLat), y = mean, ymin=X5, ymax= X95), size =0.55, position=position_dodge(width=0.5), color = "goldenrod") +
   geom_linerange( maLAI, mapping = aes(x = factor(site, level = orderLat), ymin = X25, ymax= X75), size =1.25, position=position_dodge(width=0.5), color = "goldenrod") +
   xlab("Site") + ylab("Change in diversity per unit LAI") +
-  annotate("text", 1 ,0.15, label = "d)", size = 5.5) +
+  annotate("text", 1 ,0.25, label = "d)", size = 5.5) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black"),
         axis.text = element_text(size = 10), axis.title = element_text(size = 12),axis.text.x = element_text( size= 10,angle = 55, hjust=1), legend.key=element_rect(fill="white"),legend.text=element_text(size=25)) +
@@ -621,7 +627,7 @@ quantile2575 <- function(x){
 }
 
 # load("..//output/mdlShan16FourParaSimple.Rdata")
-load("..//output/mdlShan16ParamTLD_3yrMacro.Rdata")
+load("..//output/mdlShan16ParamTLD_3yr_Nov17.Rdata")
 sumer16 <- summary(mdl4Shan16_3yr)$summary[c(
    "mu_grand","sigmaSt","muyear", "sigmayear", "sigma_microy", 
                                               "mu_grandM", "muyear2", "sigmayear2",
@@ -652,7 +658,7 @@ print(xtable(tabSh16, caption="Summary output from a joint Bayesian model linkin
 <<label= euk18S3yr, echo=FALSE , results= tex >>=
   
 # load("..//output/mdlShan18FourParaSimple.Rdata")
-load("..//output/mdlShan18ParamTLD_3yrMacro.Rdata")
+load("..//output/mdlShan18ParamTLD_3yr_Nov17.Rdata")
 sumer18 <- summary(mdl4Shan18_3yr)$summary[c(
   "mu_grand","sigmaSt","muyear", "sigmayear", "sigma_microy", 
                                               "mu_grandM", "muyear2", "sigmayear2",
