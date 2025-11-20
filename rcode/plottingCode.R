@@ -376,11 +376,10 @@ dev.off()
 
 ### grazers 
 
-inverts_finest <- read.csv("output/cleanedGrazer.csv")
-
-### Creating an object to store abundances only
-abundances_inverts_finest <- inverts_finest %>% 
+abundances_inverts_finest <- read.csv("output/cleanedGrazer.csv")
+abundances_inverts_finest <- abundances_inverts_finest %>% 
   dplyr::select(-(1:5))
+### Creating an object to store abundances only
 
 ### Get MDS stats
 set.seed(2)
@@ -396,7 +395,7 @@ NMDS_inverts
 #renaming columns
 #setnames(data, old=c("old_name","another_old_name"), new=c("new_name", "another_new_name"))
 
-setnames(NMDS_inverts, old=c("MDS1", "MDS2", "year", "region"), new=c("NMDS1","NMDS2", "year", "region"))
+names(NMDS_inverts) <- c("NMDS1","NMDS2", "year", "region")
 NMDS_inverts
 NMDS_inverts$region
 
@@ -410,7 +409,7 @@ nmds_macroeukaryotes <- ggplot(NMDS_inverts, aes(x=NMDS1, y=NMDS2, shape = year,
   stat_ellipse(aes(colour =region, group = region), type = "t", linetype = 3, size = 1) +
   geom_point(size = 5, alpha = 0.8) +
   ggtitle("Macroeukaryotes") + 
-  annotate("text", label = "stress = 0.19", x = - 1.8, y = -1.8, size = 4, colour = "black") +
+  annotate("text", label = "stress = 0.19", x = - 1, y = -1.8, size = 4, colour = "black") +
   scale_colour_manual(values=c("#1d457f",
                                "#625a94",
                                "#cc5c76",

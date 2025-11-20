@@ -140,6 +140,9 @@ d$taxonL[which(d$taxonL == "Pugettia.richii")] <- "Pugettia"
 d$taxonL[which(d$taxonL == "Pycnogonida")] <- "Pycnogonid"
 d$taxonL[which(d$taxonL == "Thorlaksonius.subcarinatus")] <- "Thorlaksonius"
 
+d$site[which(d$site == "mcmullins_north")] <- "mcmullin_north"
+d$site[which(d$site == "mcmullins_south")] <- "mcmullin_south"
+
 length(unique(d$taxonL)) # 107
 # define regions as first word of site
 d$region <- unlist(lapply( strsplit(d$site,split = "_"), function(z) z[1]))
@@ -151,10 +154,10 @@ d$sampleID <- with(d, paste(site,sample,sep = "_"))
 # summarize taxon counts per sample
 abund <- d %>% 
   # unite( "ID", year,site,sample, remove=FALSE ) %>% 
-  group_by( year, region, site, sample, sampleID, taxon5,taxonL ) %>% 
-  summarize( abundance=length(size))
+  group_by( year, region, site, sample, sampleID, taxonL ) %>% 
+  summarize( abundance=length(size) )
 
- write.csv(abund, "output/cleanedGrazer.csv", row.names = F)
+#write.csv(abundG, "output/cleanedGrazer.csv", row.names = F)
 # # summarinze mean abundance per site
 # m.mean_finest <- m.sum_finest %>% 
 #   # unite( "ID", year,site,sample, remove=FALSE ) %>% 
@@ -168,7 +171,7 @@ abundG <- abund %>%
 abundGSite <- abundG[,1:5]
 
 ### Creating an object to store abundances only
-abundMatrix <- abundG[,8:ncol(abundG)]
+abundMatrix <- abundG[,7:ncol(abundG)]
 
 # Calculate alpha diversity metrics
 shannon <- diversity(abundMatrix, index = "shannon")
@@ -182,9 +185,6 @@ alphaGraz <- data.frame(abundGSite,richness,shannon, pielou,chao1)
 alphaGraz$quadrat_id <- alphaGraz$sample
 alphaGraz$quadrat_id <- gsub('\\D+','', alphaGraz$quadrat_id)
 
-
-alphaGraz$site[which(alphaGraz$site == "mcmullins_north")] <- "mcmullin_north"
-alphaGraz$site[which(alphaGraz$site == "mcmullins_south")] <- "mcmullin_south"
 
 ############ meadow traitvs ############
 sg <- read.csv("data/MASTER_seagrass_metrics_20200214.csv")
