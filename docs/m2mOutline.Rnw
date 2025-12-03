@@ -546,14 +546,29 @@ plot_grid( macroTemp16, macroLAI16, macroTemp18, macroLAI18 , ncol = 2, nrow =2,
 
 \clearpage
 
-% \begin{figure}[ht!]
-% \centering
-%     \includegraphics[width= 1 \textwidth]{..//figures/relAbundGrazer.pdf}%,
-%     \caption{The overall diversity of the epifauna communities increased over time, but across years we observed considerable variation in the composition and relative abundance of species within each community. Depicted is the relative abundance of taxa with ten or more individuals observed in a given year of sampling. Taxa with fewer than 10 individuals have been grouped as "other." } 
-%     \label{fig:betaAlphaGrad}  
-% \end{figure}
-% \newpage
+\begin{figure}[ht!]
+\centering
+    \includegraphics[width= 1 \textwidth]{..//figures/nmdsProkaryotes.pdf}%,
+    \caption{NMDS plot for prokaryotes" }
+    \label{fig:betaAlphaGrad}
+\end{figure}
+\newpage
 
+\begin{figure}[ht!]
+\centering
+    \includegraphics[width= 1 \textwidth]{..//figures/nmdsMicroeukaryotes.pdf}%,
+    \caption{NMDS plot for microeukaryotes" }
+    \label{fig:betaAlphaGrad}
+\end{figure}
+\newpage
+
+\begin{figure}[ht!]
+\centering
+    \includegraphics[width= 1 \textwidth]{..//figures/nmdsInverts.pdf}%,
+    \caption{NMDS plot for epifuana" }
+    \label{fig:betaAlphaGrad}
+\end{figure}
+\newpage
 
 \section*{Supporting Information}
 
