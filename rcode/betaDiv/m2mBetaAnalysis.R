@@ -10,9 +10,11 @@ require(vegan)
 require(otuSummary)
 require(bayesplot)
 
+
 setwd("~/Documents/github/Calvert_O-Connor_eelgrass/m2m")
 
 # get abiotic factors:
+
 abiotic <- read.csv("output/alphaMacroOct212025.csv")
 # abiotic$comm_id1 <- abiotic$site
 # 
@@ -39,49 +41,69 @@ dim(bray2014)
 rownames(bray2014) <- colnames(bray2014)
 
 spec2014 <- matrixConvert(bray2014, colname = c("comm_id1", "comm_id2", "bray"))
-spec2014$comm1Fact <- as.numeric(spec2014$comm_id1)
-spec2014$comm2Fact <- as.numeric(spec2014$comm_id2)
+
 spec2014 <- subset(spec2014, bray < 1)
 
 lai2014 <- lai2014[complete.cases(lai2014$leaf_area_index),]
 lai2014$comm_id1 <- paste(lai2014$site, lai2014$sample_no, sep = "_")
-  
+
 df<-data.frame(x=lai2014$leaf_area_index)
 rownames(df)<- lai2014$comm_id
 dist_lai <- dist(df)
 lai_dist<-matrixConvert(dist_lai, colname = c("comm_id1", "comm_id2", "lai"))
 
-data_model<-list(spec2014,lai_dist) %>% reduce(inner_join, by=c("comm_id1","comm_id2"))
+# data_model<-list(spec2014,lai_dist) %>% reduce(inner_join, by=c("comm_id1","comm_id2"))
 # 
-# spec2014A <- merge(spec2014, lai2014, by = "comm_id1")
+data_model <- merge(spec2014, lai_dist, by = c("comm_id1", "comm_id2"))
 
 temp <- str_split_fixed(data_model$comm_id1, "_", 3)
 data_model$site <- paste(temp[,1],temp[,2], sep = "_")
 
-dat2014<-list(N = nrow(data_model),
-          N_sample = nrow(data_model),
-          s = data_model$bray,
-          regions = as.numeric(as.factor(data_model$site)),
-          n_reg = length(unique(data_model$site)),
-          x1= data_model$lai,
-          # x2=x2,
-          idx1= as.numeric(data_model$comm_id1),
-          idx2 = as.numeric(data_model$comm_id2)
-          )
+data_model$comm_id1Fact <-  as.numeric(as.factor(as.character(data_model$comm_id1)))
+data_model$comm_id2Fact <- as.numeric(as.factor(as.character(data_model$comm_id2)))
+
+write.csv(data_model, "testFactor.csv", row.names = F)
+test <- read.csv("testFactor.csv")
+test$test1 <- as.numeric(as.factor(test$comm_id1))
+test$test2 <- as.numeric(as.factor(test$comm_id2))
+
+dat2014<-list(N_obs = nrow(data_model),
+              N_samples = max(data_model$comm_id1Fact),
+              bray = data_model$bray,
+              region_idx = as.numeric(as.factor(data_model$site)),
+              N_regions = length(unique(data_model$site)),
+              lai = data_model$lai/100,
+              sumTemp = data_model$lai/100,
+              fetch = data_model$fetch/100,
+              sample_idx1= data_model$comm_id1Fact,
+              sample_idx2 = data_model$comm_id2Fact
+)
 
 # 
 # mdlB2014 <- stan("stan/m2mBetaDivSite.stan",
 #              data = dat2014,
 #              iter = 4000, warmup = 3000, chains=4)
 
-mdlB2014Simp <- stan("m2m/stan/m2mBetaDivSite.stan",
-                 data = dat2014,
-                 iter = 4000, warmup = 3000, chains=4)
+mdlB2014Simp <- stan("stan/betaComplex.stan",
+                     data = dat2014,
+                     iter = 4000, warmup = 3000, chains=4)
 save(mdlB, file = "output/mdlBeta2014.Rdata")
 
+ssm <-  as.shinystan(mdlB2014Simp)
+launch_shinystan(ssm)
+
 post <- rstan::extract(mdlB2014Simp)
-pred<-post$pred
-ppd_dens_overlay(pred[1:300,])+theme_bw()+legend_none()+labs(y="Density",x="Bray-Curtis indices")+
+pred<-post$sor_pred
+sor <- data_model$bray
+sor_pred<-as.matrix(mdlB2014Simp,"sor_pred")
+
+ppc_dens_overlay(sor,sor_pred[1:1000,])+labs(x="Sorensen index",y="Density")+
+  theme_bw()+
+  legend_none()
+theme(axis.text=element_text(size=14),axis.title=element_text(size=16))+
+  
+  
+  ppd_dens_overlay(pred[1:300,])+theme_bw()+legend_none()+labs(y="Density",x="Bray-Curtis indices")+
   labs(title="Prior samples")
 
 s <- data_model$bray
