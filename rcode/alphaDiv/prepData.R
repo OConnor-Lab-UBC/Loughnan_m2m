@@ -15,6 +15,8 @@ library(reshape2)
 library(tidyr)
 library(stringr)
 
+setwd("~/Documents/github/Loughnan_m2m")
+
 ## Microbial:
 # based on code from R_Code_and_Analysis/alphadiversity/alpha_chao1_shannon_pielou.R
 
@@ -81,7 +83,7 @@ mtaxa_update <- read.csv( "data/O'Connor_hakai_seagrass_taxa_edit.csv" )
 mtaxa_update$taxon <- gsub( " ", ".", mtaxa_update$taxon )
 
 # merge
-mTaxa <- merge( m,  mtaxa_update, by = "taxon", all.m = T )
+# mTaxa <- merge( m,  mtaxa_update, by = "taxon", all.m = T )
 
 # mTaxa <- mTaxa[complete.cases(mTaxa$taxon),]
 
@@ -92,8 +94,10 @@ rm <- c("eggs","Empty.polychaete.tubes", "Fluff","foil","Lacuna.spp..Eggs",
         "Unknown.sea.star..I.think.only.1.sp.", "Unknown.red.Halacarid.mite", "Sea.anemone..perhaps.Epiactis.prolifera..difficult.to.ID.",
         "Sea.anemone..maybe.Diadumene.lineata.but.difficult.to.ID.", "Nematoda", "Nematode")
 
-d <- mTaxa[!mTaxa$taxon %in% rm,] # nspp = 158
-d <- subset(d, is.na(remove)) # nspp = 141
+rm2 <- unique(subset(mtaxa_update, remove == "1")$taxon)
+
+d <- m[!m$taxon %in% rm,] # nspp = 158
+d <- d[!d$taxon %in% rm2,] # nspp = 143
 
 str(d)
 # cleaning spp names and lumping:
@@ -105,10 +109,15 @@ d$taxonL[which(d$taxonL == "Amphissa.columbiana")] <- "Amphissa"
 d$taxonL[which(d$taxonL == "Ampithoe.lacertosa")] <- "Ampithoidae"#
 d$taxonL[which(d$taxonL == "Ampithoe.sectimanus")] <- "Ampithoidae"
 d$taxonL[which(d$taxonL == "Ampithoe")] <- "Ampithoidae"
+d$taxonL[which(d$taxonL == "Amphitoidae")] <- "Ampithoidae"
+
 d$taxonL[which(d$taxonL == "Aoroides.intermedia")] <- "Aoroides"
-# d$taxonL[which(d$taxonL == "Caprella.californica")] 
-# d$taxonL[which(d$taxonL == "Caprella.laeviuscula")] <- 
-# d$taxonL[which(d$taxonL == "Caprella.mutica")] <-
+d$taxonL[which(d$taxonL == "Aoridae")] <- "Aoroides"
+d$taxonL[which(d$taxonL == "Balanus.crenatus")] <- "Balanus"
+
+d$taxonL[which(d$taxonL == "Caprella.californica")] <- "Caprella"
+d$taxonL[which(d$taxonL == "Caprella.laeviuscula")] <- "Caprella"
+d$taxonL[which(d$taxonL == "Caprella.mutica")] <- "Caprella"
 d$taxonL[which(d$taxonL == "Ericthonius.rubricornis")] <- "Ericthonius"
 d$taxonL[which(d$taxonL == "Gammaropsis.barnardi")] <- "Gammaropsis"
 d$taxonL[which(d$taxonL == "Gammaropsis.thomsoni")] <- "Gammaropsis"
@@ -120,30 +129,53 @@ d$taxonL[which(d$taxonL == "Ischyrocerus")] <- "Ischyroceridae"
 d$taxonL[which(d$taxonL == "Ischyrocerus.anguipes")] <- "Ischyroceridae"
 # d$taxonL[which(d$taxonL == "Lacuna.vincta")] <- 
 # d$taxonL[which(d$taxonL == "Lacuna.variegata")] <-
-d$taxonL[which(d$taxonL == "Leptochelia.dubia")] <- "Leptochelia"
+# d$taxonL[which(d$taxonL == "Leptochelia.dubia")] <- "Leptochelia"
 d$taxonL[which(d$taxonL == "Ischyrocerus.anguipes")] <- "Ischyroceridae"
-d$taxonL[which(d$taxonL == "Lirularia.lirulata")] <- "Lirularia"
-d$taxonL[which(d$taxonL == "Lottia.alveus")] <- "Lottidae"
+d$taxonL[which(d$taxonL == "Lacuna.variegata")] <- "Lacuna"
+d$taxonL[which(d$taxonL == "Lacuna.vincta")] <- "Lacuna"
+
+# d$taxonL[which(d$taxonL == "Lirularia.lirulata")] <- "Lirularia"
+# d$taxonL[which(d$taxonL == "Lottia.alveus")] <- "Lottidae"
 d$taxonL[which(d$taxonL == "Monocorophium.acherusicum")] <- "Monocorophium"
 d$taxonL[which(d$taxonL == "Mytilus.trossulus")] <- "Mytilidae"
 d$taxonL[which(d$taxonL == "Pagurus")] <- "Paguridae"
+d$taxonL[which(d$taxonL == "Pagurus.quaylei")] <- "Paguridae"
 d$taxonL[which(d$taxonL == "Pentidotea.wosnesenskii")] <- "Pentidotea"
-d$taxonL[which(d$taxonL == "Pholoe.tuberculata")] <- "Pholoidae"
-d$taxonL[which(d$taxonL == "Photis")] <- "Photis.brevipes"
-d$taxonL[which(d$taxonL == "Phyllodoce")] <- "Phyllodocida"
+
+d$taxonL[which(d$taxonL == "Pholoe.tuberculata")] <- "Pholoe"
+d$taxonL[which(d$taxonL == "Photis.brevipes")] <- "Photis"
+# d$taxonL[which(d$taxonL == "Phyllodoce")] <- "Phyllodocida"
 d$taxonL[which(d$taxonL == "Platynereis.bicanaliculata")] <- "Platynereis"
 d$taxonL[which(d$taxonL == "Pontogeneia.inermis")] <- "Pontogeneia"
 d$taxonL[which(d$taxonL == "Pontogeneia.intermedia")] <- "Pontogeneia"
 d$taxonL[which(d$taxonL == "Pontogeneia.rostrata")] <- "Pontogeneia"
-d$taxonL[which(d$taxonL == "Protohyale.intermedia")] <- "Protohyale"
+d$taxonL[which(d$taxonL == "Protohyale.intermedia")] <- "Protohyale.jarrettae"
 d$taxonL[which(d$taxonL == "Pugettia.richii")] <- "Pugettia"
-d$taxonL[which(d$taxonL == "Pycnogonida")] <- "Pycnogonid"
+d$taxonL[which(d$taxonL == "Pycnogonid")] <- "Pycnogonida"
 d$taxonL[which(d$taxonL == "Thorlaksonius.subcarinatus")] <- "Thorlaksonius"
+d$taxonL[which(d$taxonL == "Haminoaea")] <- "Haminoe"
+d$taxonL[which(d$taxonL == "Hyalellidae")] <- "Hyalidae"
+d$taxonL[which(d$taxonL == "Leptochelia.dubia")] <- "Leptochelia"
+d$taxonL[which(d$taxonL == "Lottidae")] <- "Lottiidae"
+d$taxonL[which(d$taxonL == "Nassarius.mendicus")] <- "Nassarius"
+d$taxonL[which(d$taxonL == "Pholoidae")] <- "Pholoinae"
+d$taxonL[which(d$taxonL == "Peramphithoe")] <- "Sunamphitoe"
+d$taxonL[which(d$taxonL == "Sessilia")] <- "Thoracica"
+d$taxonL[which(d$taxonL == "Gammaidean")] <- "Gammaidea"
+d$taxonL[which(d$taxonL == "Bittium.eschrichtii")] <- "Neostylidium.eschrichtii"
+d$taxonL[which(d$taxonL == "Lepasterias.hexactis")] <- "Leptasterias.hexactis"
+d$taxonL[which(d$taxonL == "Solariella.permablis")] <- "Minolia.peramabilis"
+d$taxonL[which(d$taxonL == "Gammaidean.Amphipod")] <- "Gammaridea"
+d$taxonL[which(d$taxonL == "Phyllodocida")] <- "Phyllodoce"
+# d$taxonL[which(d$taxonL == "Haminoaea")] <- "Haminoe"
+# d$taxonL[which(d$taxonL == "Haminoaea")] <- "Haminoe"
+# d$taxonL[which(d$taxonL == "Haminoaea")] <- "Haminoe"
+
 
 d$site[which(d$site == "mcmullins_north")] <- "mcmullin_north"
 d$site[which(d$site == "mcmullins_south")] <- "mcmullin_south"
 
-length(unique(d$taxonL)) # 107
+length(unique(d$taxonL)) # 111
 # define regions as first word of site
 d$region <- unlist(lapply( strsplit(d$site,split = "_"), function(z) z[1]))
 # unique sample ID to differential samples from different sites
@@ -157,21 +189,35 @@ abund <- d %>%
   group_by( year, region, site, sample, sampleID, taxonL ) %>% 
   summarize( abundance=length(size) )
 
-#write.csv(abundG, "output/cleanedGrazer.csv", row.names = F)
-# # summarinze mean abundance per site
-# m.mean_finest <- m.sum_finest %>% 
-#   # unite( "ID", year,site,sample, remove=FALSE ) %>% 
-#   group_by( year, year0, yearF, region, site,  taxon  ) %>% 
-#   summarize( abundance=mean(abundance)) 
+# write.csv(abund, "output/cleanedGrazerMatrix.csv", row.names = F)
+
+# # summarinze mean abundance per site---what are the top 10 most abundant spp
+
+meanAbund <-abund %>%
+  # unite( "ID", year,site,sample, remove=FALSE ) %>%
+  group_by( year, taxonL ) %>%
+  summarize( abundance=mean(abundance))
+
+ten <- subset(meanAbund, abundance >10)
+t2014 <- subset(meanAbund, year == 2014)
+t2015 <- subset(meanAbund, year == 2015)
+t2016 <- subset(meanAbund, year == 2016)
+t2017 <- subset(meanAbund, year == 2017)
 
 # make a community dataset
 abundG <- abund %>% 
   spread(taxonL, abundance, fill=0 ) 
 
-abundGSite <- abundG[,1:5]
+# abundG <- read.csv( "Data/R_Code_for_Data_Prep/master_data/MASTER_inverts_finest_1000_COVERAGE_RAREF.csv")
 
+abundG$site[which(abundG$site == "mcmullins_north")] <- "mcmullin_north"
+abundG$site[which(abundG$site == "mcmullins_south")] <- "mcmullin_south"
+
+# abundGSite <- abundG[,1:5]
+abundGSite <- abundG[,1:7]
 ### Creating an object to store abundances only
-abundMatrix <- abundG[,7:ncol(abundG)]
+# abundMatrix <- abundG[,7:ncol(abundG)]
+abundMatrix <- abundG[,8:ncol(abundG)]
 
 # Calculate alpha diversity metrics
 shannon <- diversity(abundMatrix, index = "shannon")
