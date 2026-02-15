@@ -42,9 +42,10 @@ model {
 }
 
 generated quantities {
-  array[N] int y_rep;   
+ array[N] int y_rep;
   for (n in 1:N) {
-    y_rep[n] = neg_binomial_2_log_rng(alpha_group[species[n]] + beta_group[species[n]] * year[n], phi);
+    real mu = exp(alpha_group[species[n]] + beta_group[species[n]] * year[n]);
+    y_rep[n] = neg_binomial_2_rng(mu, phi);
   }
 }
 

@@ -39,14 +39,14 @@ graz <- read.csv("output/cleanedGrazer.csv")
 length(unique(graz$taxonL))
 
 graz$regionYr <- as.factor(paste(graz$site, graz$year, sep = "_"))
-grazAg <- aggregate(graz["abundance"], graz[c("site","year","regionYr", "taxon5", "taxonL")], FUN = sum)
+grazAg <- aggregate(graz["abundance"], graz[c("site","year","regionYr",  "taxonL")], FUN = sum)
 rYr <- (unique(graz$regionYr))
 
 fiveP <- subset(grazAg, abundance > 10)
 lessP <- subset(grazAg, abundance < 10)
 lessP$taxon5 <- "Other"
 
-lessP <- aggregate(lessP["abundance"], lessP[c("site","year","regionYr", "taxon5", "taxonL")], FUN = sum)
+lessP <- aggregate(lessP["abundance"], lessP[c("site","year","regionYr", "taxonL")], FUN = sum)
 
 
 fiveAg <- rbind(fiveP, lessP)
@@ -294,8 +294,8 @@ pdf("figures/nmdsProkaryotes.pdf", width = 6, height = 5)
 nmds_prokaryotes <- ggplot(NMDS_16S, aes(x=NMDS1, y=NMDS2, shape = year, colour=region)) +
   stat_ellipse(aes(colour =region, group = region), type = "t", linetype = 3, size = 1) +
   geom_point(size = 5, alpha = 0.8) +
-  ggtitle("Prokaryotes") + 
-  annotate("text", label = "stress = 0.20", x = 1.1, y = -1.5, size = 4, colour = "black") +
+  ggtitle("a) Prokaryotes") + 
+  annotate("text", label = "stress = 0.20", x = -1.5, y = -1.75, size = 4, colour = "black") +
   scale_colour_manual(values=c("#1d457f",
                                "#625a94",
                                "#cc5c76",
@@ -350,8 +350,8 @@ pdf("figures/nmdsMicroeukaryotes.pdf", width = 6, height = 5)
 nmds_microeukaryotes <- ggplot(NMDS_18S, aes(x=NMDS1, y=NMDS2, shape = year, colour=region)) +
   stat_ellipse(aes(colour =region, group = region), type = "t", linetype = 3, size = 1) +
   geom_point(size = 5, alpha = 0.8) +
-  ggtitle("Microeukaryotes") + 
-  annotate("text", label = "stress = 0.15", x = 1.3, y = -2.1, size = 4, colour = "black") +
+  ggtitle("b) Microeukaryotes") + 
+  annotate("text", label = "stress = 0.15", x = -2, y = -2.1, size = 4, colour = "black") +
   scale_colour_manual(values=c("#1d457f",
                                "#625a94",
                                "#cc5c76",
@@ -376,20 +376,23 @@ dev.off()
 
 ### grazers 
 
-abundances_inverts_finest <- read.csv("output/cleanedGrazer.csv")
-abundances_inverts_finest <- abundances_inverts_finest %>% 
+invert <- read.csv("output/cleanedGrazerMatrix.csv")
+abundIn <- invert %>% 
   dplyr::select(-(1:5))
+
+invertInfo <- invert %>% 
+  dplyr::select((1:5))
 ### Creating an object to store abundances only
 
 ### Get MDS stats
 set.seed(2)
-NMDS.inverts.LOG <- metaMDS(log(abundances_inverts_finest+1), distance = "bray", k=2)  
+NMDS.inverts.LOG <- metaMDS(log(abundIn+1), distance = "bray", k=2)  
 NMDS.inverts.LOG 
 
 #build a data frame with NMDS coordinates and metadata
 MDS1 = NMDS.inverts.LOG$points[,1]
 MDS2 = NMDS.inverts.LOG$points[,2]
-NMDS_inverts = data.frame(MDS1 = MDS1, MDS2 = MDS2, year = inverts_finest$year, region = inverts_finest$region)
+NMDS_inverts = data.frame(MDS1 = MDS1, MDS2 = MDS2, year = invertInfo$year, region = invertInfo$region)
 NMDS_inverts
 
 #renaming columns
@@ -405,11 +408,11 @@ NMDS_inverts$region <- factor(NMDS_inverts$region, levels=c("choked", "pruth", "
 NMDS_inverts$year <- factor(NMDS_inverts$year, levels=c("2014", "2015", "2016","2017"))
 
 pdf("figures/nmdsInverts.pdf", width = 6, height = 5)
-nmds_macroeukaryotes <- ggplot(NMDS_inverts, aes(x=NMDS1, y=NMDS2, shape = year, colour=region)) +
+nmds_macroeukaryotes <- ggplot(NMDS_inverts, aes(x=NMDS1, y=NMDS2)) +
   stat_ellipse(aes(colour =region, group = region), type = "t", linetype = 3, size = 1) +
-  geom_point(size = 5, alpha = 0.8) +
-  ggtitle("Macroeukaryotes") + 
-  annotate("text", label = "stress = 0.19", x = - 1, y = -1.8, size = 4, colour = "black") +
+  geom_point(size = 5, alpha = 0.8, aes(shape = year, color = region)) +
+  ggtitle("c) Macroeukaryotes") + 
+  annotate("text", label = "stress = 0.19", x = - 1.4, y = -1.9, size = 4, colour = "black") +
   scale_colour_manual(values=c("#1d457f",
                                "#625a94",
                                "#cc5c76",
@@ -428,7 +431,8 @@ nmds_macroeukaryotes <- ggplot(NMDS_inverts, aes(x=NMDS1, y=NMDS2, shape = year,
          legend.justification = c(1, 1), legend.position = "right", #legend is top right
          legend.key.size = unit(2.0, 'lines'), #spacing between legends
          legend.text = element_text(size = 16), #font size of legend
-         plot.title = element_text(hjust = 0.1, size = 20, face = "bold")) #center plot title and set font size
+         plot.title = element_text(hjust = 0.1, size = 20, face = "bold")) + 
+  guides(shape = guide_legend(order = 2), color = guide_legend(order = 1))
 nmds_macroeukaryotes 
 dev.off()
 
@@ -440,3 +444,59 @@ ggplot(NMDS_inverts, aes(x=NMDS1, y=NMDS2, shape = year, colour=region)) +
   ggtitle("Macroeukaryotes") + 
   annotate("text", label = "stress = 0.19", x = - 1.8, y = -1.8, size = 4, colour = "black") +
   scale_colour_manual(values= pal)
+
+######## Plotting changes in species abundances:
+abundSp <- read.csv("output/mostAbundantSp.csv")
+
+load("output/mdlAbundChange.Rdata")
+
+sumA <- summary(mdlA)$summary
+
+post <- rstan::extract(mdlA)
+
+quantile2575 <- function(x){
+  returnQuanilte <- quantile(x, prob = c(0.05, 0.25, 0.75,0.95))
+  return(returnQuanilte)
+}
+
+bMean <- data.frame(bSp = sumA[grep("beta_global", rownames(sumA)), c("mean")])
+bSp <- data.frame(bSp = sumA[grep("beta_group\\[", rownames(sumA)), c("mean")])
+aSp <- data.frame(sumA[grep("alpha_group\\[", rownames(sumA)), c("mean","2.5%", "97.5%")])
+
+bSp <- rbind(bMean, bSp)
+row.names(bSp) <- c("Mean", "Amphissa","Ampithoidae","Aoroides" ,"Caprella",
+                    "Exogone","Harpacticoida", "Idoteidae","Lacuna","Leptochelia" , 
+                    "Mytilidae","Paguridae","Platynereis","Pugettia"  )
+quant <- t(apply(data.frame(post), 2, quantile2575) )
+head(quant)
+quantB <- quant[c("beta_global","beta_group.1","beta_group.2","beta_group.3","beta_group.4",
+                  "beta_group.5","beta_group.6","beta_group.7","beta_group.8","beta_group.9",
+                  "beta_group.10","beta_group.11","beta_group.12","beta_group.13"),]
+bSp <- cbind(bSp, quantB)
+
+par(mfrow = c(1,1), mar = c(5, 10, 2, 2))
+
+plot(seq(-1, 
+         1.25,
+         length.out = nrow(bSp)), 
+     1:nrow(bSp),
+     type = "n",
+     xlab = "Estimated change in species abundance",
+     ylab = "",
+     yaxt = "n"
+)
+
+axis(2, at = nrow(bSp):1, labels = rownames(bSp), las = 1, cex.axis = 0.8)
+points(bSp[, 'bSp'],
+       nrow(bSp):1,
+       pch = 16,
+       col = "#1d457f",
+       cex = 1.5)
+arrows(bSp[, "75%"], nrow(bSp):1, bSp[, "25%"], nrow(bSp):1,
+       len = 0, col = "#1d457f", lwd = 2)
+arrows(bSp[, "95%"], nrow(bSp):1, bSp[, "5%"], nrow(bSp):1,
+       len = 0, col = "#1d457f", lwd = 1)
+abline(v = 0, lty = 3)
+
+
+
