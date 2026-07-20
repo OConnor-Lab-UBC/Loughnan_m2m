@@ -1,0 +1,83 @@
+\documentclass{article}
+
+% required 
+\usepackage[hyphens]{url} 
+\usepackage{Sweave}
+\usepackage{graphicx}
+\usepackage{natbib}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{float}
+\usepackage[utf8]{inputenc} % allow characters in citations 
+\usepackage[nottoc]{tocbibind} %should add References to the table of contents?
+\usepackage{amsmath} % making nice equations 
+\usepackage{listings} % add in stan code
+\usepackage{xcolor}
+\usepackage{capt-of}%allows me to set a caption for code in appendix 
+\usepackage[export]{adjustbox} % adding a box around a map
+\usepackage{lineno}
+\linenumbers
+\usepackage[small]{caption}
+\usepackage{longtable}
+
+\usepackage{xr-hyper} %refer to Fig.s in another document
+\usepackage{hyperref}
+
+\setlength{\captionmargin}{30pt}
+\setlength{\abovecaptionskip}{0pt}
+\setlength{\belowcaptionskip}{10pt}
+
+% optional: change spacing
+\topmargin -1.5cm        
+\oddsidemargin 0.5cm   
+\evensidemargin 0.5cm  
+\textwidth 15.59cm
+\textheight 21.94cm 
+% \renewcommand{\baselinestretch}{1.5} % 1.5 lines between lines
+\parindent 0pt		  % sets leading space for paragraphs
+
+\externaldocument[supp-]{m2m_supp}
+
+%%% end preambling. %%%
+
+\begin{document}
+
+\renewcommand{\bibname}{References}%names reference list 
+\SweaveOpts{concordance=TRUE} % For RStudio hiccups
+
+\title{Supporting information: Linking microbial diversity to macrobiota diversity in eelgrass meadows} 
+\date{\today}
+\maketitle 
+
+\begin{figure}[ht!]
+ \centering
+<< fig = TRUE, echo = FALSE, height = 4, width = 8 >>=
+
+require(xtable)
+require(rstan)
+require(cowplot)
+
+macroYr <- ggplot()  +
+  geom_pointrange(maYr, mapping = aes(x = factor(site, level = orderLat), y = mean, ymin=X5, ymax= X95), size =0.55, position=position_dodge(width=0.5), color = "cyan4") +
+  geom_linerange( maYr, mapping = aes(x = factor(site, level = orderLat), ymin = X25, ymax= X75), size =1.25, position=position_dodge(width=0.5), color = "cyan4") +
+  xlab("Site") + ylab("Change in diversity per year") +
+  annotate("text", 3.5 ,0.75, label = "c) Epifauna", size = 5.5) +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black"),
+        axis.text = element_text(size = 15), axis.title.y = element_text(size = 20), axis.title.x = element_blank(),axis.text.x = element_text( size= 15,angle = 55, hjust=1), legend.key=element_rect(fill="white"),legend.text=element_text(size=25)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "black")
+
+# pdf("..//figures/siteLvlChangeJointMdl.pdf", width = 15, height = 7)
+plot_grid( microYr,micro18Yr, macroYr , ncol = 3, nrow =1,align = "v")
+# dev.off()
+
+@
+\caption{Site-level changes in Shannon diversity over time for the a) prokaryote communties, b) microeukaryote communities and c) epifauna communities. In general, our model estiamted a decline in the prokaryote diversity over time, while epifauna diveristy increased, but the microeukaryote community remained stable.}
+\label{fig:test}
+\end{figure}
+
+\clearpage
+
+
+
+\end{document}
