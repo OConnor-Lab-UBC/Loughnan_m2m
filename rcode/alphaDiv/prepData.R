@@ -332,14 +332,14 @@ lai2014$site[which(lai2014$site == "TB")] <- "triquet_south"
 lai2014$site[which(lai2014$site == "NT")] <- "triquet_north"
 
 lai2014$year <- "2014"
+lai2014$quadrat_lai <- lai2014$plot_SA/625
 
-lai2014 <- lai2014[,c("site", "year","sample_no","leaf_area_index")]
+lai2014 <- lai2014[,c("site", "year","sample_no","quadrat_lai")]
 
 bio2014Final <- merge(bio2014Combo, lai2014, by = c("site", "year", "sample_no"), all = T )
 
-bio2014Fin <- aggregate(bio2014Final[c("quadrat_biomass_g","quadrat_macroalgae_g","leaf_area_index")], bio2014Final[c("year","site","sample_no")], FUN = mean)
+bio2014Fin <- aggregate(bio2014Final[c("quadrat_biomass_g","quadrat_macroalgae_g","quadrat_lai")], bio2014Final[c("year","site","sample_no")], FUN = mean)
 colnames(bio2014Fin)[colnames(bio2014Fin) == "sample_no"] <- "quadrat_id"
-colnames(bio2014Fin)[colnames(bio2014Fin) == "leaf_area_index"] <- "quadrat_lai"
 
 
 seagrassF <- rbind.fill(seagrass, bio2014Fin)
@@ -499,9 +499,9 @@ alphaSub <- alphaClim[,c("region", "year", "site", "quadrat_id","richness" ,"sha
 alphaLAI <- alphaSub[complete.cases(alphaSub),]
 
  # write.csv(alphaSix, "m2m/output/alphaDivClim6Param.csv", row.names = F)
-# write.csv(alphaMacro, "m2m/output/alphaDivClimMacro.csv", row.names = F)
+ write.csv(alphaClim, "output/alphaDivClimMacro.csv", row.names = F)
 
-
+hist(alphaClim$quadrat_lai)
 ### prep data for shoot density ananlysis:
 
 # shootDen <- alphaClim[,c("region", "site", "year", "quadrat_id", "quadrat_shoot_density")]

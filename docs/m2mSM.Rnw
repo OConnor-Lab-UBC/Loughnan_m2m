@@ -56,9 +56,120 @@
 require(xtable)
 require(rstan)
 require(cowplot)
+require(ggplot2)
 
-macroYr <- ggplot()  +
-  geom_pointrange(maYr, mapping = aes(x = factor(site, level = orderLat), y = mean, ymin=X5, ymax= X95), size =0.55, position=position_dodge(width=0.5), color = "cyan4") +
+d <- read.csv("output/alphaDivClimMacro.csv")
+d <- subset(d, site != "pruth_pocket")
+d <- subset(d, site != "goose_north")
+
+f <- read.csv("output/fetchDataCalvert.csv")
+f$site[which(f$site == "mcmullins_south")] <- "mcmullin_south"
+f$site[which(f$site == "mcmullins_north")] <- "mcmullin_north"
+
+mFetch <- aggregate(f["fetch"], f[c("site")], FUN = mean)
+
+#1. plot the bed area, depth, fetch across sites
+
+dHab <- unique(d[,c("site", "region", "bed_area_m2", "actual_depth")])
+dHab <- dHab[complete.cases(dHab$bed_area_m2),]
+
+orderLat <- list("choked_inner","choked_sandspit", "pruth_pocket","triquet_north","triquet_south", "goose_south_east", "goose_south_west", "mcmullin_north", "mcmullin_south")
+
+
+bA <- ggplot()  +
+  geom_point(dHab, mapping = aes(x = factor(site, level = orderLat), y = bed_area_m2/1000000), color = "cyan4") +
+  xlab("Site") + ylab(expression("Bed area (" * km^2 * ")")) +
+  annotate("text", 1 ,0.75, label = "a)", size = 5.5) +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black"),
+        axis.text = element_text(size = 15), axis.title.y = element_text(size = 20), 
+        axis.title.x = element_blank(),
+        axis.text.x = element_text( size= 15,angle = 55, hjust=1), 
+        legend.key=element_rect(fill="white"),legend.text=element_text(size=25));
+
+depth <- ggplot()  +
+  geom_point(dHab, mapping = aes(x = factor(site, level = orderLat), y = actual_depth), color = "goldenrod") +
+  xlab("Site") + ylab("Meadow depth (m)") +
+  annotate("text", 1 ,2, label = "b)", size = 5.5) +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black"),
+        axis.text = element_text(size = 15), axis.title.y = element_text(size = 20), 
+        axis.title.x = element_blank(),
+        axis.text.x = element_text( size= 15,angle = 55, hjust=1), 
+        legend.key=element_rect(fill="white"),legend.text=element_text(size=25)); depth 
+
+fet <- ggplot()  +
+  geom_point(mFetch, mapping = aes(x = factor(site, level = orderLat), y = fetch), color = "cyan4") +
+  xlab("Site") + ylab("Average fetch") +
+  annotate("text", 1 ,2.5, label = "c)", size = 5.5) +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black"),
+        axis.text = element_text(size = 15), axis.title.y = element_text(size = 20), 
+        axis.title.x = element_blank(),
+        axis.text.x = element_text( size= 15,angle = 55, hjust=1), 
+        legend.key=element_rect(fill="white"),legend.text=element_text(size=25)); fet
+
+### plot the annual parameters: temperature, LA, macroalgae
+dAnn <- unique(d[, c("site","year","quadrat_macroalgae_g","quadrat_lai", "quadrat_biomass_g")])
+
+dClim <- unique(d[, c("site","year", "comboTemp")]); 
+dClim <- dClim[complete.cases(dClim$comboTemp),]
+
+unique_groups <- unique(dClim$site) 
+facet_labels <- paste0(letters[1:length(unique_groups)], ") ", unique_groups)
+names(facet_labels) <- unique_groups
+
+tempAnn <- ggplot()  +
+  geom_line(dClim, mapping = aes(x = year, y = comboTemp, color = site), show.legend = FALSE) +
+  xlab("Site") + ylab(expression("Average summer temperature (" * degree * "C)")) +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black"),
+        axis.text = element_text(size = 15), axis.title.y = element_text(size = 20), 
+        axis.title.x = element_blank(),
+        axis.text.x = element_text( size= 15,angle = 55, hjust=1), strip.background = element_rect(fill = NA, color = NA)) +
+  facet_wrap(~ site, ncol = 4, labeller = as_labeller(facet_labels))
+
+la <- ggplot()  +
+  geom_point(dAnn, mapping = aes(x = year, y = quadrat_lai, color = site), show.legend = FALSE) +
+  xlab("Site") + ylab("Leaf area Index") +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black"),
+        axis.text = element_text(size = 15), axis.title.y = element_text(size = 20), 
+        axis.title.x = element_blank(),
+        axis.text.x = element_text( size= 15,angle = 55, hjust=1), strip.background = element_rect(fill = NA, color = NA)) +
+  facet_wrap(~ site, ncol = 4, labeller = as_labeller(facet_labels)); la
+
+# laBox <- ggplot()  +
+#   geom_boxplot(dAnn, mapping = aes(x = site, y = quadrat_lai, color = site), show.legend = FALSE) +
+#   xlab("Site") + ylab("Leaf area") +
+#   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+#         panel.background = element_blank(), axis.line = element_line(colour = "black"),
+#         axis.text = element_text(size = 15), axis.title.y = element_text(size = 20), 
+#         axis.title.x = element_blank(),
+#         axis.text.x = element_text( size= 15,angle = 55, hjust=1), strip.background = element_rect(fill = NA, color = NA)) 
+
+bioM <- ggplot()  +
+  geom_point(dAnn, mapping = aes(x = year, y = quadrat_biomass_g, color = site), show.legend = FALSE) +
+  xlab("Site") + ylab("Quadrat biomass (g)") +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black"),
+        axis.text = element_text(size = 15), axis.title.y = element_text(size = 20), 
+        axis.title.x = element_blank(),
+        axis.text.x = element_text( size= 15,angle = 55, hjust=1), strip.background = element_rect(fill = NA, color = NA)) +
+  facet_wrap(~ site, ncol = 4, labeller = as_labeller(facet_labels)); bioM
+
+bioMacr <- ggplot()  +
+  geom_point(dAnn, mapping = aes(x = year, y = quadrat_macroalgae_g, color = site), show.legend = FALSE) +
+  xlab("Site") + ylab("Quadrat macroalgae biomass (g)") +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black"),
+        axis.text = element_text(size = 15), axis.title.y = element_text(size = 20), 
+        axis.title.x = element_blank(),
+        axis.text.x = element_text( size= 15,angle = 55, hjust=1), strip.background = element_rect(fill = NA, color = NA)) +
+  facet_wrap(~ site, ncol = 4, labeller = as_labeller(facet_labels)); bioMacr
+
+maGeomLinerangemacroYr <- ggplot()  +
+  geom_pointrange(maYr, mapping = aes(x = factor(site, level = orderLat, group = site), y = mean, ymin=X5, ymax= X95), size =0.55, position=position_dodge(width=0.5), color = "cyan4") +
   geom_linerange( maYr, mapping = aes(x = factor(site, level = orderLat), ymin = X25, ymax= X75), size =1.25, position=position_dodge(width=0.5), color = "cyan4") +
   xlab("Site") + ylab("Change in diversity per year") +
   annotate("text", 3.5 ,0.75, label = "c) Epifauna", size = 5.5) +
