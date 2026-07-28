@@ -18,11 +18,12 @@ library(shinystan)
 library(tidyr)
 library(stringr)
 
- setwd("~/Documents/github/Calvert_O-Connor_eelgrass/")
- m <- read_csv( "Data/R_Code_for_Data_Prep/master_data/MASTER_inverts_finest_1000_COVERAGE_RAREF.csv" )
+ # setwd("~/Documents/github/Calvert_O-Connor_eelgrass/")
+ m <- read_csv( "data/MASTER_inverts_finest_1000_COVERAGE_RAREF.csv" )
  
  st <- c("choked_inner","choked_sandspit","goose_south_east", "goose_south_west", "mcmullins_north","mcmullins_south","triquet_north", "triquet_south")
-
+ yr <- seq(2014, 2017, by = 1)
+ 
 bc2014 <- list()
 
 for(s in 1:length(st)){
@@ -31,15 +32,15 @@ for(s in 1:length(st)){
  
  # community data
  m.comm <- temp[8:ncol(temp)]
- 
+ yr <- unique(m.meta$year)
  # - save the bray-curtis distances
- for( i in 2014:2017 ){
+ for( i in 1:length(yr) ){
     path <- "output/brayCurtis/plotYr/"
    metai <- m.meta %>%
-     filter(year==i) #%>%
+     filter(year== yr[i]) #%>%
    # unite(sample, site, sample, sep="_")
    # filter zero columns and rows
-   comm.tmp <- m.comm[m.meta$year==i,]
+   comm.tmp <- m.comm[m.meta$year == yr[i],]
    keep.col <- which(colSums(comm.tmp)>0)
    keep.row <- which(rowSums(comm.tmp)>0)
    meta.use <- metai[ keep.row, ]
@@ -54,9 +55,9 @@ for(s in 1:length(st)){
    
    rownames(commdisti) <- colnames(commdisti)
    temp <- matrixConvert(commdisti, colname = c("comm_id1", "comm_id2", "bray"))
-   temp$year <- i
+   temp$year <- yr[i]
    temp$site <- st[s]
-   write_csv( data.frame(temp), paste0(path,st[s],"_",i,"_betaBayes.csv") )
+   write_csv( data.frame(temp), paste0(path,st[s],"_",yr[i],"_betaBayes.csv") )
    
    # commdisti <- vegdist( comm.family[meta.family$year==i,], method = "bray" )
    # commdisti <- as.matrix(commdisti)
@@ -76,19 +77,13 @@ for(s in 1:length(st)){
 files <- list.files(path = "output/brayCurtis/plotYr", pattern =".csv" )
 files[1]
 
-for(f in files){
-  f <- 1
+betaB <- list()
+for(f in 1:length(files)){
   d <- read.csv(paste0("output/brayCurtis/plotYr/",files[f]))
-  rownames(d) <- colnames(d)
-  temp <- matrixConvert(d, colname = c("comm_id1", "comm_id2", "bray"))
-  temp$year <- i
-  temp$site <- s
-  
-}
-bray2014 <- bray2014[2:75]
+  betaB <- rbind(betaB, d)
+  }
 
-rownames(bray2014) <- colnames(bray2014)
-spec2014 <- matrixConvert(bray2014, colname = c("comm_id1", "comm_id2", "bray"))
+write.csv(betaB, "output/betaPlotYr.csv", row.names = FALSE)
 ## Micobial:
 # based on code from R_Code_and_Analysis/alphadiversity/alpha_chao1_shannon_pielou.R
 
